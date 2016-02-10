@@ -42,6 +42,14 @@ That will install eris-db.js and eris-contracts.js and their dependencies (plus 
 
 If you are on AWS, the version of NPM which will likely be installed will create an error when installing eris-contracts. Please see the [fix here](https://github.com/eris-ltd/eris-contracts.js#installation).
 
+<hr />
+
+If you are behind a firewall then you may need to let npm know about your proxy. To do that add a line to your ~/.npmrc:
+
+```
+proxy=http://myproxy.com
+```
+
 **End Troubleshooting**
 
 **Temporary Hack**

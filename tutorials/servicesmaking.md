@@ -229,6 +229,27 @@ docker build -t idiservice .
 
 What that's going to do is to tell Docker to take this directory and build the Dockerfile in it. After it does its going to give it a `tag` of `idiservice`. When you build a docker image you will nearly always give it a `tag`. Tags in dockerland are like `names` in other lands.
 
+**Troubleshooting**
+
+If you are behind a firewall then you may need to let npm know which proxy to use to tunnel through the firewall. To do that you'll need to refactor your dockerfile too look something like this:
+
+```
+FROM node:4.3.0
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+RUN npm config set proxy http://myproxy.com
+
+ONBUILD COPY package.json /usr/src/app/
+ONBUILD RUN npm install
+ONBUILD COPY . /usr/src/app
+
+CMD [ "npm", "start" ]
+```
+
+**End Troubleshooting**
+
 ## What is a Docker Image
 
 A [Docker Image](https://docs.docker.com/engine/introduction/understanding-docker/) is a layered, statically compiled, file system. Each line in a Dockerfile represents a way to build the require functionality that is included in the produced docker image. You can think of docker images as _the thing_ that can get us a whole lot of verifiable computing because of its deterministic methods of building and static nature. Once a docker image is built it can never be changed. (But you can remove it and replace it with a new docker image of the same name of course).
