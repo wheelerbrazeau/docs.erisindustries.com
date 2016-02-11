@@ -73,3 +73,12 @@ By default, `eris` is a fairly quiet tool. If you would like to have more output
 
 If you are reporting a bug, please rerun the command which caused the issue with the debug flag (`-d` or `--debug`) and send us the output to a [Github Issue](https://github.com/eris-ltd/eris-cli/issues/new) or via Community Driven [Support Forums](https://support.erisindustries.com).
 
+# I'm behind a firewall
+
+Docker itself needs to be given a proxy. You can do this by updating your `/etc/default/docker` with the following line.
+
+```
+export http_proxy="http://myproxy.com"
+```
+
+Some organizations do not allow connections to quay.io (which is an equivalent to Docker Hub but with many more security features). At eris we keep most of our docker images on quay.io. At this time we are working on an automatic bridge script which will mirror our quay.io images to hub.docker.com but that is still a work in progress. As such you will likely need to ensure your computer can access quay.io.
