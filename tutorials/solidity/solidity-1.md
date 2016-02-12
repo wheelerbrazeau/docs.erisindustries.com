@@ -258,7 +258,7 @@ contract FundManager {
         bank = new Bank();
     }
 
-    // Attempt to withdraw the given 'amount' of Ether from the account.
+    // Attempt to deposit the given 'amount' of Ether to the account.
     function deposit() returns (bool res) {
         if (msg.value == 0){
             return false;
