@@ -52,7 +52,7 @@ The end result is that it is easier to marry the specific business challenges an
 
 ## Permissioned Blockchains' Are More Cost Effective
 
-Public blockchain networks are costly to deal with for a simple reason: spam control. Public blokchain networks of logic optimized blockchain clients (e.g., the Ethereum network) has a pricing structure which is linked to computation operations.
+Public blockchain networks are costly to deal with for a simple reason: spam control. Public blockchain networks of logic optimized blockchain clients (e.g., the Ethereum network) has a pricing structure which is linked to computation operations.
 
 So every time a contract needs to go into a loop, users of that contract must pay to run that loop. How much users are required to pay will be determined by how many times the contract must iterate through the loop. The more times through the loop, the more computational operations will be required, and the more money must be spent.
 
