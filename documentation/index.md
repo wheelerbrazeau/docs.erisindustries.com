@@ -49,6 +49,8 @@ title: "Documentation"
 
 # Eris Legal
 
-[eris:legal command overview]({{ site.data.sites["main"].url }}/components//tool-specific/erislegal/)
+[eris:legal overview]({{ site.data.sites["main"].url }}/components/erislegal/)
 
-[eris:legal command reference and specifications](/tool-specific/erislegal/)
+[eris:legal command reference and specifications](erislegal/)
+
+[eris:legal tutorial](/tutorials/tool-specific/erislegal/)
