@@ -123,7 +123,7 @@ read -r -d '' JSON_DATA << EOM
 EOM
 
 # location of compiler
-URL="https://compilers.eris.industries:8091/compile"
+URL="https://compilers.eris.industries:9090/compile"
 
 # compile that baby!
 RESULT=`curl --silent -X POST -d "${JSON_DATA}" $URL --header "Content-Type:application/json"`
