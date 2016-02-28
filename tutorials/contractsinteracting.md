@@ -114,7 +114,7 @@ var idisContract = contractsManager.newContractFactory(idisAbi).at(idisContractA
 function getValue(callback) {
   idisContract.get(function(error, result){
     if (error) { throw error }
-    console.log("Idi's number is:\t\t\t" + result['c'][0]);
+    console.log("Idi's number is:\t\t\t" + result.toNumber());
     callback();
   });
 }
