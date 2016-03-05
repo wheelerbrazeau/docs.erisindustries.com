@@ -36,12 +36,6 @@ Installation requires that Docker be installed. Please see the [Docker](https://
 
 At the current time, `eris` requires `docker` >= {{ site.data.coding["docker"].minimum }}. You can check your docker version with `docker version`. We do not test against older versions of docker. `eris` may or may not work against earlier versions of docker and we can make no guarantees of usability there.
 
-**Temporary Hack**
-
-Note we are working on integrating Docker 1.10 into our test suite. At this time it is not currently tested so use at your own risk. It is very easy to downgrade your docker version to 1.9.1 though.
-
-**End Temporary Hack**
-
 #### Docker Installation for Linux
 
 Follow the link above for the official way to install Docker on your Linux box.
