@@ -15,35 +15,27 @@ There are three steps need to get moving with Eris:
 
 # Step 1: Install the Eris Platform
 
-**Dependencies**: `eris` has 2 dependencies: [Docker](https://www.docker.com/) and [Go](https://golang.org).
-
-* Docker is a run anywhere container solution which makes development, deployment, testing, and running of distributed applications a breeze.
-* Go is a programming language we use to build our software.
-
-We have binary releases for `eris` available at this time via our [Github Releases](https://github.com/eris-ltd/eris-cli/releases). For those on Linux we also have (beta) `apt-get` and (experimental) `yum` support.
-
-**Note** if you install the binary of `eris` you **do not** need to install `go`; however, you **do** need to install Docker.
+**Dependencies**: `eris` has 1 dependency: [Docker](https://www.docker.com/). Docker is a run anywhere container solution which makes development, deployment, testing, and running of distributed applications a breeze.
 
 Currently we consider the most workable setup to be (what our tests consider authoritative). We are working steadily toward making eris available for a wide variety of host environments.
 
 * HOST_OS = {{ site.data.coding["os"].authoritative }}
-* GO = {{ site.data.coding["golang"].authoritative }}
 * DOCKER = {{ site.data.coding["docker"].authoritative }}
 
-### [Install Docker](http://docs.docker.com/installation/).
+## [Install Docker](http://docs.docker.com/installation/).
 
 Installation requires that Docker be installed. Please see the [Docker](https://docs.docker.com/installation/) documentation for how to install.
 
 At the current time, `eris` requires `docker` >= {{ site.data.coding["docker"].minimum }}. You can check your docker version with `docker version`. We do not test against older versions of docker. `eris` may or may not work against earlier versions of docker and we can make no guarantees of usability there.
 
-#### Docker Installation for Linux
+### Docker Installation for Linux
 
 Follow the link above for the official way to install Docker on your Linux box.
 
 **Essential**! After you install docker, then you must make sure that the user you are using to develop with `eris` has access to the docker socket (which is accessible via the docker Linux usergroup). When you are logged in as the user you can do this:
 
-```
-(sudo) usermod -a -G docker $USER
+```bash
+sudo usermod -a -G docker $USER
 ```
 
 That command will add the current user to the docker group which will mean that docker will not need to be called from `sudo`.
@@ -54,7 +46,7 @@ The above command *may* be skipped, but if you do, then you will need to run all
 
 **Note** Docker does not run on 32bit architecture. If you are using a Linux box, please **make sure** it is 64bit architecture.
 
-#### Docker Installation for OSX & Windows
+### Docker Installation for OSX & Windows
 
 If you are on OSX or Windows, the [Docker Toolbox](https://www.docker.com/toolbox) is a graphical way of installing Docker, Virtualbox and Docker Machine. The Toolbox will build all of the functionality which Docker requires so that `eris` is able to connect into the Docker daemon.
 
@@ -66,74 +58,44 @@ By default the Docker Toolbox will use VirtualBox to create a very minimal Linux
 
 If virtualbox gives you trouble, then use [docker machine's plugins](https://github.com/docker/machine/blob/master/docs/AVAILABLE_DRIVER_PLUGINS.md) and create your `eris` machine [in the cloud](/tutorials/advanced/chaindeploying/).
 
-#### OSX Only
+### OSX Only
 
 If you're a brew and brew cask user then:
 
-```
+```bash
 brew cask install virtualbox
 brew install docker docker-machine
 ```
 
-#### Windows Only
+### Windows Only
 
 If you're a chocolatey user then:
 
-```
+```bash
 choco install virtualbox docker docker-machine
 ```
 
-#### All Platforms
+### All Platforms
 
 Make sure that everything is setup with Docker by running:
 
-```
+```bash
 docker version
-```
-
-### [Install Go](https://golang.org/doc/install)
-
-At the current time, `eris` requires `go` >= {{ site.data.coding["golang"].minimum }}. Go is not needed if you install `eris` via a binary installation (details below).
-
-An easy way to install go (for OSX and Linux) is via Travis-CI's [Gimme](https://github.com/travis-ci/gimme) tool. First you install gimme; then `eval $(gimme {{ site.data.coding["golang"].authoritative }})` and you'll be all set up.
-
-Otherwise, please see the documentation in the above link to install go.
-
-#### All Platforms
-
-Please see the link above for the official way to install Go on your operating system.
-
-Make sure that Go is properly installed by running:
-
-```
-go version
-```
-
-Once you have go installed, then you will want to make sure that you also have your `$GOPATH` in your `$PATH`. Most gophers add the following line to their `~/.bashrc`, `~/.profile`, `~/.zshrc` file or other relevant file.
-
-```
-export PATH="$GOPATH/bin:$PATH"
 ```
 
 **Note** you will need to make sure that you perform the above command for the *user* which will be running eris.
 
-If you do not add that line to the relevant shell file then you can just type that line into the shell each time you log in. You can check that this change was added by `echo $PATH` and making sure that your path has been updated appropriately.
-
-Now you're ready to install the components of the Eris platform.
-
 ## Install Eris
 
-`eris` can be installed in one of two ways. Either you can install `eris` via our binary distribution for your operating system or via building with go. Each of these installation methods is covered below.
+`eris` can be easily installed using our convenient binary releases.
 
-### Binary Installation
+We distribute binaries via our [Github Releases Page](https://github.com/eris-ltd/eris-cli/releases). You will simply need to download the proper zip or tarball for your architecture and then extract that into a place in your `PATH`.
 
-We distribute binaries via our [Github Releases Page](https://github.com/eris-ltd/eris-cli/releases). You will simply need to download the proper zip or tarball for your architecture and then extract that into a place in your PATH.
-
-#### apt-get installation
+### apt-get installation
 
 We have (beta) `apt-get` support for most current versions of Debain and Ubuntu. If you wish to use apt-get to install `eris` then you will simply perform the following:
 
-```
+```bash
 sudo apt-key adv --keyserver hkp://pool.sks-keyservers.net --recv-keys DDA1D0AB
 sudo echo "deb https://apt.eris.industries DIST main" > /etc/apt/sources.list.d/eris.list
 ```
@@ -142,18 +104,12 @@ sudo echo "deb https://apt.eris.industries DIST main" > /etc/apt/sources.list.d/
 
 Once the apt repository is added to your sources then:
 
-```
+```bash
 sudo apt-get update
 sudo apt-get install eris
 ```
 
-Check that everything installed correctly with:
-
-```
-eris init
-```
-
-#### yum installation
+### yum installation
 
 We now have (experimental) `yum` support for most current versions of Fedora, CentOS, RHEL, etc. If you wish to use yum to install `eris` then you will perform the following:
 
@@ -166,22 +122,14 @@ Yum support is still quite experimental, so please do not rely on it, but please
 
 ### Building From Source
 
-Go is very easy to build from source. Indeed it is really only one command.
+If you would like to build from source [see our documentation](install-source/).
 
-```
-go get github.com/eris-ltd/eris-cli/cmd/eris
-```
+### All Platforms
 
-Now you're ready to go.
+Check that everything installed correctly with:
 
-```
+```bash
 eris init
-```
-
-**Tip**: To see all the new stuff happening:
-
-```irc
-eris update --branch develop
 ```
 
 ## Troubleshooting Your Install
@@ -192,7 +140,8 @@ If you have any errors which arise during the installation process, please see o
 
 If you want to create your blockchain it is very easy.
 
-```irc
+```bash
+eris chains make test_chain --chain-type simplechain
 eris chains new test_chain
 ```
 
@@ -200,27 +149,33 @@ That `test_chain` can be whatever name you would like it to be. This simple comm
 
 To check that your chain is running type:
 
-```irc
+```bash
 eris chains ls
+```
+
+Stop and remove your chain:
+
+```bash
+eris chains stop -rxf test_chain
 ```
 
 Obviously, you will want an ability to make chains which you properly parameterize. As such you can always type:
 
-```irc
+```bash
 eris chains new --help
 ```
 
-To see the various files which you can give to chains new for it to be instantiated properly.
+To see the various ways which you can give to chains new for it to be instantiated properly.
 
 Eris does not only work with permissioned smart contract networks. It works just as well with existing blockchains. Want to run bitcoin?
 
-```irc
+```bash
 eris services start btcd
 ```
 
 Want to run ethereum?
 
-```irc
+```bash
 eris services start eth
 ```
 
@@ -229,6 +184,12 @@ That's it. Your chain is rolled!
 # Step 3: Build (and run) your Distributed Application
 
 {% image 'CEu7odJWMAA3VSa.jpg' %}
+
+Let's remove all of the eris "stuff" before we move on to the next portion of the tutorials:
+
+```bash
+eris clean
+```
 
 Now you're ready to build and run your distributed application!
 
