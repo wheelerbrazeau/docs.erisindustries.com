@@ -122,7 +122,7 @@ Yum support is still quite experimental, so please do not rely on it, but please
 
 ### Building From Source
 
-If you would like to build from source [see our documentation](install-source/).
+If you would like to build from source [see our documentation](/tutorials/install-source/).
 
 ### All Platforms
 
