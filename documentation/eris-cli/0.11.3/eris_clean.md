@@ -11,9 +11,11 @@ Clean up your eris working environment.
 
 ## Synopsis
 
-Stops and force removes all eris containers
-	(chains, services, datas, etc) by default. Useful
-	for development.
+By default, this command will stop and
+	force remove all eris containers (chains, services, 
+	datas, etc). Addtional flags can be used to remove
+	the eris home directory and eris images. Useful
+	for rapid development with docker containers.
 
 ```bash
 eris clean
@@ -22,10 +24,12 @@ eris clean
 ## Options
 
 ```
-      --all      removes everything, stopping short of uninstalling eris
-      --dir      remove the eris home directory ~/.eris
-      --images   remove all eris docker images
-  -y, --yes      overrides prompts prior to removing things
+  -a, --all          removes everything, stopping short of uninstalling eris
+  -c, --containers   remove all eris containers (default true)
+      --dir          remove the eris home directory: $HOME/.eris
+  -i, --images       remove all eris docker images
+  -s, --scratch      remove contents of: $HOME/.eris/scratch (default true)
+  -y, --yes          overrides prompts prior to removing things
 ```
 
 ## Options inherited from parent commands
