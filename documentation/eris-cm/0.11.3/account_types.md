@@ -56,7 +56,7 @@ If you are making a more complex chain, don't use this account type.
 # The Participant Account Type
 
 Users who have a key which is registered with participant privileges can send
-tokes; call contracts; and use the name registry
+tokens; call contracts; and use the name registry
 
 
 ## Typical Users of this Account Type: Participant
