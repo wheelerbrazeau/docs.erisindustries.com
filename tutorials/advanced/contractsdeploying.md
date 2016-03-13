@@ -21,7 +21,7 @@ This tutorial assumes you have worked through the following advanced tutorials:
 
 ## Contracts Strategy
 
-We are going to use a very simple `get` | `set` contract which sets a variable and gets that same variable. It is about the easiest interactive contract one can imagine and as such we will use that for showing how to work with the eris platform.
+We are going to use a very simple `get` / `set` contract which sets a variable and gets that same variable. It is about the easiest interactive contract one can imagine and as such we will use that for showing how to work with the eris platform.
 
 ## Make a Chain
 
