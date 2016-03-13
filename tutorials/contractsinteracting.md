@@ -40,7 +40,7 @@ That will install eris-db.js and eris-contracts.js and their dependencies (plus 
 
 **Troubleshooting**
 
-If you are on AWS, the version of NPM which will likely be installed will create an error when installing eris-contracts. Please see the [fix here](https://github.com/eris-ltd/eris-contracts.js#installation).
+If you are on Ubuntu 14.04 LTS, the version of NPM which will likely be installed will create an error when installing eris-contracts. Please see the [fix here](https://github.com/eris-ltd/eris-contracts.js#installation).
 
 <hr />
 
