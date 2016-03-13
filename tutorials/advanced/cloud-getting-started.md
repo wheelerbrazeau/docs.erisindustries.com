@@ -88,13 +88,15 @@ docker-machine create --driver digitalocean -h
 Note, especially, the `--digitalocean-region` flag. We'll be using that one now to create the machines.
 
 ```bash
-docker-machine create --driver digitalocean --digitalocean-region ams3 my-advchain-val-000
-docker-machine create --driver digitalocean --digitalocean-region sgp1 my-advchain-val-001
-docker-machine create --driver digitalocean --digitalocean-region sfo1 my-advchain-val-002
-docker-machine create --driver digitalocean --digitalocean-region tor1 my-advchain-val-003
+docker-machine create --driver digitalocean --digitalocean-size 1gb --digitalocean-region ams3 my-advchain-val-000
+docker-machine create --driver digitalocean --digitalocean-size 1gb --digitalocean-region sgp1 my-advchain-val-001
+docker-machine create --driver digitalocean --digitalocean-size 1gb --digitalocean-region sfo1 my-advchain-val-002
+docker-machine create --driver digitalocean --digitalocean-size 1gb --digitalocean-region tor1 my-advchain-val-003
 ```
 
 It will take some time to provision those machines. If you wanted to do it faster you could background the first three jobs. As stated above, feel free to substitute your favorite cloud provider for digital ocean, or virtualbox even if you just wanted to run this tutorial locally; just note that for other cloud providers you would use the appropriate flags for that provider instead of the `--digitalocean-region` flag (as we will see in the next section with AWS there can be more than one additional flag required).
+
+Note that we use 1gb droplet sizes as go has a bit of trouble building `eris` on smaller boxes due to lower RAM capacity. Alternatively, you could install from apt-get.
 
 Nothing within this tutorial requires that Digital Ocean be used; the beauty of the docker-machine approach is that it normalizes working with docker engines running in the cloud. As we will see later, once one of these machines is "in scope" Eris can easily connect to it and run `eris` commands against the remote docker engine in the cloud. Pretty neat!
 
