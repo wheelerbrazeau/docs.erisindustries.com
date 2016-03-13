@@ -5,9 +5,7 @@ title: "Tutorials | Working With Eris Keys"
 
 ---
 
-**Note** -- This tutorial is built for Eris versions >= 0.11.1. For other versions of this tutorial please see below:
-
-* [v0.10](../deprecated/keyexporting-v0.10/)
+**Note** -- This tutorial is built for Eris versions >= 0.11.1.
 
 Unless you have a different configuration than our standard, admittedly opinionated, pathway then you will be running the eris-keys signing server inside of a container. This means that you need to be able to import and export your keys. This tutorial covers the existing `eris keys` commands and working with keys vis-a-vis containers on the eris platform.
 

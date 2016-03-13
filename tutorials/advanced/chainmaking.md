@@ -1,416 +1,398 @@
 ---
 
 layout: docs
-title: "Tutorials | Making a Permissioned Chain (Advanced) - Eris v0.11"
+title: "Tutorials | Making a Permissioned Chain (Advanced)"
 
 ---
 
 It is not necessarily a simple matter to "make" a permissioned chain. With the `eris` tooling, we make it as simple as possible, but it does take a bit of crafting to get everything correctly sorted.
 
-This tutorial is structured to walk individuals through parts of the eris developer tool kit while also showing readers how to make an advanced permissioned blockchain. Note, during the course of this tutorial, the chain we will create is suitable for pilots iterating toward production, it is a bit more complicated than a simple local chain one only needs for testing simple contracts out in a solo environment. To create a very simple permissioned chain suitable for quick prototyping, please see our [simple chain making tutorial](../chainmaking/).
+This tutorial is structured to walk individuals through parts of the eris developer tool kit while also showing readers how to make an advanced permissioned blockchain. Note, during the course of this tutorial, the chain we will create is suitable for pilots iterating toward production, it is a bit more complicated than a simple local chain one only needs for testing simple contracts out in a solo environment.
 
-This tutorial, on the other hand is made to walk through a (slightly) more complex permissioned chain.
+To create a very simple permissioned chain suitable for quick prototyping, please see our [simple chain making tutorial](/tutorials/chainmaking/). This tutorial, on the other hand is made to walk through a (slightly) more complex permissioned chain.
 
-**Note** -- This tutorial is built for Eris versions >= 0.11. For other versions of this tutorial please see below:
+**Note** -- This tutorial is built for Eris versions >= 0.11.3. For other versions of this tutorial please see below:
 
-* [v0.10](../deprecated/chainmaking-v0.10/)
+* [v0.11.0-v0.11.2](/tutorials/deprecated/chainmaking-v0.11.2/)
+
+# Dependencies
+
+This sequence of tutorials assumes that you have an understanding of the `eris` tooling to the point we ended in our [101 tutorial sequence](/tutorials/getting-started/).
+
+This sequence of tutorials also assumes that you have worked through a few of the eris tool-specific tutorials. Namely:
+
+* [Docker Machine](/tutorials/tool-specific/docker_machine/)
+
+This tutorial assumes you have worked through the following advanced tutorials:
+
+* [Get Started in the Cloud](/tutorials/advanced/cloud-getting-started/)
 
 # Introduction
 
-There are three steps to making a permissioned blockchain:
+There are typically two steps to making a permissioned blockchain (for less advanced users we say there are three but really there are two):
 
-1. Make (or Get) the public keys for the individuals
-2. Make the accounts.csv and validators.csv files
-3. Instantiate the blockchain
+1. Make the necessary files
+2. Instantiate the blockchain
 
 We shall go through these in their logical order.
 
-## Users Design
+## Chain Design
 
-To do this we need to, first, consider, *who* will get *what* permissions and *why*. It is outside the scope of this tutorial to outline all of the considerations which would come into play when thinking about creating a [permissioning system](/documentation/eris-db-permissions/), but for the purposes of this tutorial, we will craft the genesis block to use the following paradigm:
+To design our chain we need to, first, consider, *who* will get *what* permissions and *why*. It is outside the scope of this tutorial to outline all of the considerations which would come into play when thinking about creating a [permissioning system](/documentation/eris-db-permissions/), but for the purposes of this tutorial, we will craft the genesis block to use the following paradigm:
 
-* Administrators (these would be developers who had **full** control over the chain)
-* Validators (these will be set up as cloud instances and they will **only** be given validation permissions)
-* Participants (these will have permissions to create contracts, and do most of the stuff necessary on the chain)
+* Administrators (these would be developers who had **full** control over the chain, but will **not** be validators on the chain);
+* Validators (these will be set up as cloud instances and they will **only** be given validation permissions);
+* Developers (who will have **partial** access to the more advanced featurs of the chain, such as the ability to update eris:db's name registry and also create contracts on the chain); and
+* Participants (these will have permissions to do most of the stuff necessary on the chain from a common participants point of view; they'll be able to send tokens and call contracts).
 
-For the purposes of this tutorial, we will have (1) administrator, (5) validators, and (20) participants. This will require a total of 26 keys, and all of their specifics to be generated and added to the genesis block.
+For the purposes of this tutorial, we will have (1) administrator, (7) validators, (3) developers, and (20) participants. This will require a total of 31 keys, and all of their specifics to be generated and added to the genesis block.
 
 If you would like to understand all of the permissions which an eris:db smart contract network is capable of providing, [please see our documentation on the subject](/documentation/eris-db-permissions/).
-
-To see more about how we typically design chains for proofs of concept you can see [this deck](http://www.slideshare.net/CaseyKuhlman/eris-industries-typical-account-types).
 
 ## A Note Regarding This Tutorial
 
 The `eris` toolchain is designed to be very unix like, and as such we are able to craft most of what is needed in simple bash scripts which any competant developer should be able to understand. Bash really, truly, is the common demoninator as it does not require any specialized language specific knowledge beyond a bare minimum to understand what is happening.
 
-For this tutorial, we have kept the bash scripting to a bare minimum, but should you have any questions regarding any of the bash scripting, please let us know on our [Support Forums](https://support.erisindustries.com) and we will endeavor to make more clear what any commands that are unclear are actually doing.
+For this tutorial, we have kept the bash scripting to a bare minimum, but should you have any questions regarding any of the bash scripting, please let us know [here](https://github.com/eris-ltd/docs.erisindustries.com/issues) and we will endeavor to make more clear what any commands that are unclear are actually doing.
 
-# Step 1. Make (or Get) the Public Keys
+# Step 1. Make the Necessary Files
 
-Everyone who interacts with an eris:db blockchain will need to have a properly formated keypair. To make a keypair we will use `eris keys`.
+If you have run through the chain making tool (`eris chains make simplechain2` without any flags) then you will have been introduced to the idea of account-types. In eris, we are not restrictive about what account-types you can use. We expose a wide variety of permissions which you can utilize to add a network level permissioning system to your network of eris:db clients (see links above). This adds a large amount of complexity to the equation, however, and to simplify the use of permissions, we utilize a layer of abstraction which are `account types`. These account types are simply bundles of permissions and tokens which the [eris:chain_manager tool](https://github.com/eris-ltd/eris-cm) utilizes to package up our files for us.
 
-`eris keys` usually operates as a signing daemon, but when we use eris keys to *create* key pairs what we are doing effectively is writing files. As is usual with the eris tooling, `eris keys` is opinionated and will work by default against the following directory: `~/.eris/keys/data`. When a key pair is created, that key pair will get written into that directory.
+Let's first take a closer look at our account types:
 
-When we are using containers, these containers are not built to *hold* data, but rather are built to hold what is needed to run processes. But, if we're making keypairs, then we definitely want to *keep* these.
+```bash
+cd ~/.eris/chains/account-types
+ls
+```
 
-To accomplish this, we will use use the `eris` tooling only. First we need to start the eris-keys daemon:
+In this directory you will find a few `*.toml` files. These files each represent a different account type with its bundles of permissions. Let's see what they look like either open the file in your favorite text editor or:
+
+```bash
+cat root.toml
+```
+
+At the top of the file you will see the description of the account type and other narrative stuff which is consumed by the chain making wizard that is utilized by `eris chains make simplechain3` (without any flags).
+
+After the description sections you'll see the following lines:
+
+```toml
+default_number = 3
+default_tokens = 9999999999
+default_bond = 0
+```
+
+The first line `default_number` tells the eris chain maker by default how many of the `root` accounts to make. The `default_tokens` tells the eris chain maker how many tokens to give each key which is generated and given to this account type. The `default_bond` tells the eris chain maker by default how many tokens should be bonded by the key which is generated and given to this account type. When `default_bond` is zero, the eris chain maker will not add the account type's key(s) to the genesis.json as validators.
+
+The third section of the toml file is the permissions table. This section looks something like this:
+
+```toml
+[perms]
+root = 1
+send = 1
+call = 1
+create_contract = 1
+create_account = 1
+bond = 1
+name = 1
+has_base = 1
+set_base = 1
+unset_base = 1
+set_global = 1
+has_role = 1
+add_role = 1
+rm_role = 1
+```
+
+Where a field is `1` eris chain maker will turn that permission for the account type `on`; and where it is `0` eris chain maker will turn that permission for the account type `off`. To adjust the permissions for a default account type then edit any of the `~/.eris/chains/account-types/*.toml` files as you wish. After that, whenever you run the eris chain maker it will respect the changes to any of the fields.
+
+You can also simply add new account types, which is what we're going to do next. Let's make a copy of the `developer.toml` file and edit it.
+
+```bash
+cp developer.toml adv_chain_developer.toml
+```
+
+Open `~/.eris/chains/account-types/adv_chain_developer.toml` in your favorite text editor. Make the following changes:
+
+```toml
+name = "AdvDeveloper"
+
+...
+
+bond = 1
+has_base = 1
+```
+
+What did those changes do? Well the first change should be obvious. For the second change we modified the permission to `bond` and to utilize the `has_base` functionality from `0` (off) to `1` (on) for this account type. We are not going to use either of these permissions that we changed, this is only to demonstrate how we'd update the account types we're gonna use.
+
+At this point once we're happy with the account types for our chain (feel free to look around at the other account types files if you like; but we're just going to use the defaults for the rest of this tutorial), then we can move on to the next step in the process.
+
+Now we are goint to take a look at `eris`'s chain types feature.
+
+```bash
+cd ~/.eris/chains/chain-types
+ls
+```
+
+In this directory is our chain types. Let's take a look at what a chain types file is:
+
+```bash
+cat simplechain.toml
+```
+
+Similarly to account types files, the chain types files start with some lines describing the chain type. Then there is a table for the account types (as well as some tables `eris chains` will be utilizing in future versions) which look like this:
+
+```toml
+[account_types]
+Full = 1
+Developer = 0
+Participant = 0
+Root = 0
+Validator = 0
+```
+
+That table tells the eris chain maker that when the `--chain-type` flag is utilized how many of each of the account types to make. So let's make a copy of this file and add our own chain type.
+
+```bash
+cp simplechain.toml advchain.toml
+```
+
+Open `advchain.toml` in your favorite text editor and let's edit it to look like the following:
+
+```toml
+# This is a TOML config file.
+# For more information, see https://github.com/toml-lang/toml
+
+name = "advchain"
+
+definition = ""
+
+[account_types]
+Full = 0
+AdvDeveloper = 3
+Developer = 0
+Participant = 20
+Root = 1
+Validator = 7
+
+[messenger]
+
+[manager]
+
+[consensus]
+
+```
+
+You can see that we have zeroed out `Full` (which is a root + validator account type useful in simplechain scenarios) and `Developer` and utilized our new account type `AdvDevelop` which we will make three (3) of. The rest of the account types will utilize the defaults.
+
+Now. After that quick tour we are ready to make the chain.
+
+```bash
+cd ~/.eris/chains
+eris chains make advchain --chain-type advchain
+```
+
+**Troubleshooting**
+
+If you get the following error:
+
+```irc
+API error (500): Could not get container for eris_service_keys_1
+```
+
+That means you should start your keys service with:
 
 ```bash
 eris services start keys
 ```
 
-By default, `eris` is a very "quiet" tool. To check that the keys service started correctly type:
+Then rerun the `eris chains make` command
+
+**End Troubleshooting**
+
+If it paused for a second and then just returned you to your terminal that means it was successful. Let's check with:
 
 ```bash
-eris services ls
+ls
 ```
 
-To see what we can do with eris keys we will run:
+In your `~/.eris/chains` directory you should now have an `advchain` directory. Let's move into that directory.
 
 ```bash
-eris services exec keys "eris-keys -h"
+cd advchain
+ls
 ```
 
-What this is doing is running the `eris-keys -h` "inside" the keys containers. Technically it is not inside the keys container, but inside a separate container based on the keys image with the data container mounted, but if this sentence doesn't make sense to you then feel free to ignore.
-
-But instead of dealing with the `eris-keys` service directly, we are going to use `eris keys` from the eris cli tool. To see the wrappers which the eris cli tooling provides around the `eris-keys` daemon, please type:
-
-```bash
-eris keys -h
-```
-
-Now it is time to generate a key!
-
-```bash
-eris keys gen
-```
-
-That command will output a string which is the public address of the keypair which was generated. Now, for the purposes of this tutorial **only** we will also create all of the necesary keys for all of the "users" of the chain and we will do so without passwords. Again, this is for demonstration purposes only, for a production system you will not do what we're about to do.
-
-
-```bash
-chain_dir=~/.eris/chains/idiaminchain
-mkdir $chain_dir
-eris keys gen > $chain_dir/admin_addr
-```
-
-This will create an administrator key (which we will later give special privileges to).
-
-```bash
-fin=4
-for ((i=0;i<=fin;i++)); do
-  eris keys gen >> $chain_dir/val_addr
-done
-```
-
-The above command will create 5 validator keys (which we will later give special privileges to). Now, finally, we'll create 20 keys for the participants in the system. Normally you would not create the keys for others, usually you would just query their public key or address; however Idi was a man who liked to take control so we're gonna follow his lead.
-
-```bash
-fin=19
-for ((i=0;i<=fin;i++)); do
-  eris keys gen >> $chain_dir/part_addr
-done
-```
-
-To see the keys which eris-keys generated please type:
-
-```bash
-eris services exec keys "ls /home/eris/.eris/keys/data"
-```
-
-Now these keys need to be made ready for eris:db to use.
-
-First let's save the correct key string to use into a few variables.
-
-```bash
-admin_addr=$(cat $chain_dir/admin_addr | sed -e 's/[[:space:]]//')
-```
-
-If you're on bash then do the following:
-
-```bash
-readarray vals_addrs < $chain_dir/val_addr
-readarray participant_addrs < $chain_dir/part_addr
-```
-
-The above will **only work for bash**; if you're a zsh user you'll need to do the following
-
-```bash
-zmodload -ap zsh/mapfile mapfile
-vals_addrs=( "${(f)mapfile[$chain_dir/val_addr]}" )
-participant_addrs=( "${(f)mapfile[$chain_dir/part_addr]}" )
-```
-
-Now, with that done we are ready to translate the eris-keys into a format which can be consumed by eris:db. The first step is to get the public key and add that as a shell variable
-
-```bash
-admin_key=$(eris keys pub $admin_addr | sed -e 's/[[:space:]]//')
-```
-
-The next step in the process is to change that raw public key into a key form which can be consumable by eris:db.
-
-```bash
-eris keys convert $admin_addr > $chain_dir/priv_validator.json
-```
-
-Now we are going to do the same thing for the validator's keys.
-
-```bash
-declare -a vals_keys
-fin=4
-for ((i=0;i<=fin;i++)); do
-  addr=$(echo ${vals_addrs[$i]} | sed -e 's/[[:space:]]//')
-  vals_keys[$i]=$(eris keys pub $addr | sed -e 's/[[:space:]]//')
-done
-```
-
-Finally, the participant's keys. The reason that we are "gathering" these public keys will become apparently shortly.
-
-```bash
-declare -a participant_keys
-fin=19
-for ((i=0;i<=fin;i++)); do
-  addr=$(echo ${participant_addrs[$i]} | sed -e 's/[[:space:]]//')
-  participant_keys[$i]=$(eris keys pub $addr | sed -e 's/[[:space:]]//')
-done
-```
-
-Note, for the above, we are not making priv_validator.json files for *all* of the participants since this is only a demonstrator tutorial. Ideally, each participant would create their own key and send the address to the administrator who was creating the blockchain.
-
-# Step 2. Make the genesis.csv
-
-Having all of the public key addresses, we're ready to start making the .csv files which will be used to Instantiate the blockchain in Step 3.
-
-First we're going to make a chain container that we can work inside by `new`-ing and then `stop`-ing a chain.
-
-```bash
-eris chains new idiaminchain
-eris chains stop idiaminchain
-```
-
-To see all of the possible permissions use the following command:
-
-```
-eris chains exec -p idiaminchain mintperms all
-```
-
-Please note the `-p` in the above command. That publishes random ports. If you run a `chains exec` and get a `port is already allocated` error, then you can add the `-p` port to randomize the ports which are published to the host. This is mostly fixed but at times there could be port conflicts.
-
-All of the names may not make total sense to you, but our documentation will improve to capture what each of these does (in the meantime, feel free to ask us on our [support forums](https://support.erisindustries.com); the more times we get questions, the higher we'll prioritize the documentation here).
-
-Right, so let's set up our `permissions` and `set bits` as shell variables:
-
-```bash
-perms_admin=$(eris chains exec -p idiaminchain mintperms all | grep -C 1 "(As Integers)" | tail -n 1 | awk -F ',' '{print $1}')
-```
-
-```bash
-setbt_admin=$(eris chains exec -p idiaminchain mintperms all | grep -C 1 "(As Integers)" | tail -n 1 | awk -F ',' '{print $2}')
-```
-
-```bash
-perms_part=$(eris chains exec -p idiaminchain mintperms int root:0 send:1 call:1 create_contract:1 create_account:1 bond:0 name:1 | grep -C 1 "(As Integers)" | tail -n 1 | awk -F ',' '{print $1}')
-```
-
-```bash
-setbt_part=$(eris chains exec -p idiaminchain mintperms int root:0 send:1 call:1 create_contract:1 create_account:1 bond:0 name:1 | grep -C 1 "(As Integers)" | tail -n 1 | awk -F ',' '{print $2}')
-```
-
-```bash
-perms_vals=$(eris chains exec -p idiaminchain mintperms int root:0 send:0 call:0 create_contract:0 create_account:0 bond:1 name:0 | grep -C 1 "(As Integers)" | tail -n 1 | awk -F ',' '{print $1}')
-```
-
-```bash
-setbt_vals=$(eris chains exec -p idiaminchain mintperms int root:0 send:0 call:0 create_contract:0 create_account:0 bond:1 name:0 | grep -C 1 "(As Integers)" | tail -n 1 | awk -F ',' '{print $2}')
-```
-
-Now for these permissions what we're doing is we are saving as variables the permissions and the SetBit for each of the "types" of users of this particular chain.
-
-You can see what each of these is by `echo $perms_part` or whatever variable you'd like to see.
-
-Also, when you are ready to make your own chain, you should change the permissions to whatever makes sense for your particular chain.
-
-Now that we have the permissions, we should consider whether each user will be given tokens or not. For the purposes of this tutorial, we'll just give everyone tons of tokens and save it as a shell variable.
-
-```bash
-tokens="2251799813685248"
-```
-
-Finally, we'll want to set up an identifier schema so we can remember who is who. For the purposes of this tutorial we'll just use the chain name and then we'll iterate each of the users accordingly (this will make sense in a second, so please bear with us). We'll also add some convenience functions to the shell to ease the generation process going forward.
-
-```bash
-chain_name="idiaminchain"
-write_line() {
-  echo "$1","$2","$3","$4","$5" >> $chain_dir/accounts.csv
-}
-write_line_vals() {
-  echo "$1","$2","$3","$4","$5" >> $chain_dir/validators.csv
-}
-```
-
-Right. Now we are ready to make our two csv files. But, wait, what in the world?
-
-So to create an eris:db chain we generally have two "sections" to the chain. One which will create accounts, and one which will create validators. These will then both be used down the road. We could create these as one genesis.csv but that can get confusing where we have some users who will simply "use" the chain and others who will act as validators so at eris we tend to keep these in two separate csv files rather than as one.
-
-One thing to note is that for the purposes of the rest of this, we will assume that you have saved the public key addresses generated in Step 1 as variables (which should be easy enough to figure out). If you were hand crafting this creation process rather than scripting it, then you would enter these one by one on the command line.
-
-```bash
-write_line $admin_key $tokens "$chain_name"_admin $perms_admin $setbt_admin
-```
-
-Now for the validators.
-
-```bash
-fin=4
-for ((i=0;i<=fin;i++)); do
-  # write the lines for the validators to the validator and accounts csv's
-  write_line $(echo ${vals_keys[$i]} | sed -e 's/[[:space:]]//') $tokens ""$chain_name"_val_0"$i"" $perms_vals $setbt_vals
-  write_line_vals $(echo ${vals_keys[$i]} | sed -e 's/[[:space:]]//') $tokens ""$chain_name"_val_0"$i"" $perms_vals $setbt_vals
-done
-```
-
-Now, the above requires a *bit* of shell scripting knowledge to understand what is happening. First, we create one admin for the chain. Normally you'd want more admins than just one, but for the purposes of this we've just created one.
-
-Second we have created the validators. It has been assumed that the public key addresses were saved into an `vals_keys` array of the same length as the number of validators.
-
-Now to create the participants:
-
-```bash
-fin=19
-for ((i=0;i<=fin;i++)); do
-  # write the lines for the participants to the accounts csv
-  write_line $(echo ${participant_keys[$i]} | sed -e 's/[[:space:]]//') $tokens ""$chain_name"_participant_0"$i"" $perms_part $setbt_part
-done
-```
-
-Once we have gone through the above, then we should have "everybody accounted for"!
-
-# Step 3. Instantiate the Blockchain
-
-With the csv's filled out we're ready to rock and roll.
-
-To create a genesis block we use a different mint-client tool, the `mintgen` tool. This tool will generate a genesis block based on a csv or other variables. To see a bit about the mintgen tool, type:
-
-```
-eris chains exec -p idiaminchain "mintgen -h"
-```
-
-We will be using the `known` command. So first, take a look at the help for this:
-
-```
-eris chains exec -p idiaminchain "mintgen known -h"
-```
-
-Now we need to stop and take a moment to talk about eris and data containers. Because Eris uses Docker's backbone to provide all of this functionality we've been enjoying without having to install any of the tooling natively. we have to learn to work *with* Docker rather than *against* Docker. And to assist you in that journey, Eris uses the concept of data containers. These are special Docker containers which are meant to "hold" data rather than to hold processes which "do stuff".
-
-If you check your docker containers at this point with:
-
-```bash
-docker ps -a
-```
-
-You will see that you have a container which is something like `eris_data_idiaminchain_1`. What we're going to do now is to do another eris chains new, but this time we're going to give it a `--dir` flag which will then "suck up" whatever is in the host directory and "put it into" that data container.
-
-```bash
-eris chains rm --data $chain_name
-eris chains new $chain_name --dir $chain_name
-eris chains stop $chain_name
-```
-
-```bash
-eris chains exec -p $chain_name "mintgen known --csv=/home/eris/.eris/chains/$chain_name/validators.csv,/home/eris/.eris/chains/$chain_name/accounts.csv $chain_name" > $chain_dir/genesis.json.bak
-```
-
-**N.B.**: You may get an error which looks like this:
+Your output should look something like this:
 
 ```irc
-Error - Permissions must be an integer
-Container eris_interactive_eris_chain_idiaminchain_1 exited with status 1
+accounts.csv               advchain_participant_006  advchain_participant_018
+accounts.json              advchain_participant_007  advchain_participant_019
+addresses.csv              advchain_participant_008  advchain_root_000
+advchain_advdeveloper_000  advchain_participant_009  advchain_validator_000
+advchain_advdeveloper_001  advchain_participant_010  advchain_validator_001
+advchain_advdeveloper_002  advchain_participant_011  advchain_validator_002
+advchain_participant_000   advchain_participant_012  advchain_validator_003
+advchain_participant_001   advchain_participant_013  advchain_validator_004
+advchain_participant_002   advchain_participant_014  advchain_validator_005
+advchain_participant_003   advchain_participant_015  advchain_validator_006
+advchain_participant_004   advchain_participant_016  validators.csv
+advchain_participant_005   advchain_participant_017
 ```
 
-If you get that error that means that your csv files have not been properly formulated. First you'll want to check them on the host with:
+What are we looking at? Well, we're looking at a bunch of files and directories that we are going to use for starting our chain.
+
+You should look through the files in this directory:
 
 ```bash
-cat ~/.eris/chains/$chain_name/accounts.csv
+cat accounts.csv
 ```
 
-That file should look something like this:
+That will output something that looks like this:
 
 ```csv
-9B7C6F1F52400C35BE6F5CB7138304369A7DCD77,2251799813685248,idiaminchain_admin,16383,16383
-049387262939D3499CB52C9D4CF1E1EB70CF84CC,2251799813685248,idiaminchain_val_00,32,127
-E38899B3518EF34BFE3EA898C4D8981A7900202C,2251799813685248,idiaminchain_val_04,32,127
-A0FEFEB34F8065BFC6C53926994DD98F430585C6,2251799813685248,idiaminchain_particpant_00,94,127
+8E8A774435AC9F56B37DB4309ABF40CE9BE5E5BDD9D47C334FB5F3A1A8F2FEDA,9999999999,advchain_advdeveloper_000,14590,16383
+4CE6468E8348424D55227F537F65154BA22A58D9F35B3066C9A9B03DE214D64D,9999999999,advchain_advdeveloper_001,14590,16383
+D2C5837094738C73B29B95CE2E96E1D3B99EEE1E21D3AFB18DBDB2002E9B2BF2,9999999999,advchain_advdeveloper_002,14590,16383
+62FC9E8C47C776321B71E396DD3F3C1BEF0BB70169E9BB2C894122531451DCFD,9999999999,advchain_participant_000,2118,16383
+64BD863DD516254B291503306641BECB1EF2BFC27BBCA732C4C6A392B7CDE5D3,9999999999,advchain_participant_001,2118,16383
+9080F5835B34EF05E2B6C02E27A6382118F90B51D8DA07CC15421DB9CC1BC329,9999999999,advchain_participant_002,2118,16383
+189F5C04CB8151A91B64C805C3C64A2C947DD51E3FD7AE8CC66223BD9C0898D9,9999999999,advchain_participant_003,2118,16383
+EA3448CA1FC8DAA696DB4E3D3B4D44C4D2B2C28D587C14A4AB3910138B59A946,9999999999,advchain_participant_004,2118,16383
+64D247A9C0DD8BA506757086849256FE8A95CEA9914021C26C7926EA9B93446C,9999999999,advchain_participant_005,2118,16383
+671CB5CE2E7B959AA82526C32C5249EE11E1FDA03D701B9E1E96DAB76D47EE8C,9999999999,advchain_participant_006,2118,16383
+15E961A0DBCAD230CB4EF419637BD4F0C3869D39580C82D97235C8C91E71A769,9999999999,advchain_participant_007,2118,16383
+896125B445EC682DB9509E672D8F4CFF7B9A761DAE11A0BEEF6EB8FCB7C84C1A,9999999999,advchain_participant_008,2118,16383
+AA18F8EB0645FF1C400A8375D6E86AC1882EDEA87E03677D23F7BD12D4820431,9999999999,advchain_participant_009,2118,16383
+5B6DF82BA53C4233938C277C1B1CA5A5E98FE6A0672C1470718485626036FA1E,9999999999,advchain_participant_010,2118,16383
+982B4F5744ECAD949FD9741DC991D2D74F5586BA2F43EE3BEB1E89ABECCC4356,9999999999,advchain_participant_011,2118,16383
+9A86EA853704B0AD3B1160CF8B73DD3F4BDD8C6B911FE6BD8D01B96B55D94A1B,9999999999,advchain_participant_012,2118,16383
+F46FFB9321BC01B31393ACD0568A06124EE68D4780F3E412980EB1EFB765C667,9999999999,advchain_participant_013,2118,16383
+583805A071C6BBD54BBEA7AB588ED65CDF6091EA1A1E81D09BE37722D4252083,9999999999,advchain_participant_014,2118,16383
+CCF936A8468086AD2BD07BBA9A1EDAFCB6BF1AA40EEB99B2060A81B13ABBD902,9999999999,advchain_participant_015,2118,16383
+FCEC03B2FDBF8F4ABBF67C024125A4A0C4974B87E72CA6A3498B4157596AD396,9999999999,advchain_participant_016,2118,16383
+988DDB37CB56D9C5D4D1553D912B2EE9B308E266BCFA3BE9FB4BA5DA1E7BFE38,9999999999,advchain_participant_017,2118,16383
+94746737F920A84831318AA782888D0F89A2D08DBDC84006E15B8B053B174396,9999999999,advchain_participant_018,2118,16383
+B463365F86522FF4A3C31483CBB1376EB3147B180A3F47DA722BF3280F527EA8,9999999999,advchain_participant_019,2118,16383
+FC500CD9311575B1B2D12B72B2F5B37C2E3EFBC9C57D4B4F27190C350E54427E,9999999999,advchain_root_000,16383,16383
+A343EBBED1AA05AAB2FD2C3D377FF1A4F0986ECB364D3542050216BD72042311,9999999999,advchain_validator_000,32,16383
+4C0DB0C7D3C44963DFCBDAB19271EE2F4F3CD52A7B925DAFBA0A0265E0BCF5BD,9999999999,advchain_validator_001,32,16383
+734A10E769FD137B5F4B46423BA8F73DE099FB4A68AD768E933990B711E21325,9999999999,advchain_validator_002,32,16383
+22E1D7439C881B7F891DA6E63F12287ECCF04F3F03382D8247DC05478A41C915,9999999999,advchain_validator_003,32,16383
+46828EC5120AE670A2D4386780F5034110DFA51B80DA7BFAE01B34795558E190,9999999999,advchain_validator_004,32,16383
+24E7BC129F9FDE6D6D31F749A0220F1D827186883B8ED1164273D666C9A3C350,9999999999,advchain_validator_005,32,16383
+D1B95DC7AC13786DABE6BE2F6F5217A4276EDE942AC7EA6853DBA5A11E15641C,9999999999,advchain_validator_006,32,16383
 ```
 
-You'll also want to check the validators csv file:
-
-```bash
-cat ~/.eris/chains/$chain_name/validators.csv
-```
-
-That file should look something like this:
+These are the accounts that will get made on the chain. This csv can later be utilized by `eris chains make --known` to remake a genesis.json if needed. The form of this csv is:
 
 ```csv
-049387262939D3499CB52C9D4CF1E1EB70CF84CC,2251799813685248,idiaminchain_val_00,32,127
-1798977C968653221907677907694FA629D30F15,2251799813685248,idiaminchain_val_01,32,127
-ABF9F624E42ACB695F04301EBC7BC9B04C0D8464,2251799813685248,idiaminchain_val_02,32,127
-9F2891F348AF4748386EE86A9C113CA1E5D17BC9,2251799813685248,idiaminchain_val_03,32,127
-E38899B3518EF34BFE3EA898C4D8981A7900202C,2251799813685248,idiaminchain_val_04,32,127
+publicKey,tokens,name,permission,set_base
 ```
 
-If in either of these files you see lines that look like this:
+You can see that, e.g., each of the validator nodes has the same `permission` number, that all the accounts have the same `set_base` and all of the tokens given match the defaults set up in the account types files.
+
+**Temporary Hack**
+
+Next let's look at the accounts.json
+
+```bash
+cat accounts.json
+```
+
+This file is useful for testing when integrating with `eris-contracts.js`. Getting `eris-contracts.js` fully integrated into `eris-keys` is on our roadmap for future releases but at this time it is still needed.
+
+**End Temporary Hack**
+
+Now let's look at the addresses.json
+
+```bash
+cat addresses.csv
+```
+
+This file should be self-explanatory. It simply includes the `address` (which is a hashed version of the public key) and the `name`. This file is useful when combining eris chain maker with eris:package_manager and for scripting interactions over a given chain.
+
+Finally, let's look at the validators.csv
+
+```bash
+cat validators.csv
+```
+
+As with the accounts.csv, this is a file which can later be fed into `eris chains make --known` for recreation of the genesis.json. The file looks similar, but distinct from the accounts.json
 
 ```csv
-,2251799813685248,idiaminchain_val_00,32,127
-,2251799813685248,idiaminchain_val_01,32,127
-,2251799813685248,idiaminchain_val_02,32,127
-,2251799813685248,idiaminchain_val_03,32,127
-,2251799813685248,idiaminchain_val_04,32,127
+A343EBBED1AA05AAB2FD2C3D377FF1A4F0986ECB364D3542050216BD72042311,9999999998,advchain_validator_000,32,16383
+4C0DB0C7D3C44963DFCBDAB19271EE2F4F3CD52A7B925DAFBA0A0265E0BCF5BD,9999999998,advchain_validator_001,32,16383
+734A10E769FD137B5F4B46423BA8F73DE099FB4A68AD768E933990B711E21325,9999999998,advchain_validator_002,32,16383
+22E1D7439C881B7F891DA6E63F12287ECCF04F3F03382D8247DC05478A41C915,9999999998,advchain_validator_003,32,16383
+46828EC5120AE670A2D4386780F5034110DFA51B80DA7BFAE01B34795558E190,9999999998,advchain_validator_004,32,16383
+24E7BC129F9FDE6D6D31F749A0220F1D827186883B8ED1164273D666C9A3C350,9999999998,advchain_validator_005,32,16383
+D1B95DC7AC13786DABE6BE2F6F5217A4276EDE942AC7EA6853DBA5A11E15641C,9999999998,advchain_validator_006,32,16383
 ```
 
-That means that your csv files are incorrectly formulated. Just make sure that you added them correctly in the above section of this tutorial.
+The form of this csv is:
 
-If those files do not have lines that look like that then you may have old csv files in the data container. Check this with:
+```csv
+publicKey,tokensBonded,name,permission,set_base
+```
+
+Note that there are two main differences between the accounts.csv and the validators.csv. (1) Only the validator nodes are in the validator.csv file, and (2) the amount of tokens in the csv file is one less for the validator nodes. This means that all the validator nodes will be given `9999999999` tokens but will bond `9999999998` tokens (leaving them with `1` token unbonded).
+
+Next let's look at the files in all these directories:
 
 ```bash
-eris data exec $chain_name "cat /home/eris/.eris/chains/$chain_name/accounts.csv"
+cd advchain_root_000
+ls
 ```
 
-If everything looks correct, then you can also check the validators.csv. If the file which is `cat`ed out of the data container is not the same as the file `cat`ed from the host then you just need to reset the data container:
+In this directory you should see a priv_validator.json. This is the key that will be used by the eris:db client. (Note, we are working on moving signing completely out of eris:db and completely into eris-keys but this work is not yet finished.)
+
+There is also a genesis.json file that is within the directory.
+
+This directory contains the **minimum** necessary files to start a chain. As we will see soon, there is one file which is lacking to fully run *this* chain.
+
+**N.B.** You will want to export your keys onto the host at this point so that you have them backed up. Please see [this tutorial](/tutorials/tool-specific/keyexporting) on how to do that.
+
+# Step 2. Instantiate the Blockchain
+
+With all the files made for us by the eris chain maker out we're ready to rock and roll.
+
+Let's start the chain and use our root credentials!
 
 ```bash
-eris data rm $chain_name
-eris chains new $chain_name --dir $chain_name
-eris chains stop $chain_name
+eris chains new advchain --dir advchain/advchain_root_000
 ```
 
-Now you'll be ready to rerun the `mintgen` command noted above.
+Boom. You're all set with your custom built, permissioned, smart contract-ified, blockchain. Except for one thing. This particular chain won't run out of the box though. Why? Because you'll need to deploy the validators and connect them to one another.
 
-**Temporary hack**: eris:db has changed from previously using sub-millisecond time to now only using second based time. This is because javascript is unable to parse sub-second time. But currently, mintgen outputs a genesis block with sub-second time added. We will need to "zero" that out by using the `jq` tool. You can equally just edit the file.
+Let's take a look at the chain for a minute:
 
 ```bash
-jq '.genesis_time = "'$(jq '.genesis_time' $chain_dir/genesis.json.bak | sed -e 's/\.[[:digit:]][[:digit:]][[:digit:]]Z/.000Z/' | tr -d '"')'"' $chain_dir/genesis.json.bak > $chain_dir/genesis.json
+eris chains logs advchain -f
 ```
 
-And with that, we have a shiny genesis.json. To see the genesis.json,
+That command will `follow` the logs. To stop following the logs use `ctrl+c`. As you will see, nothing appears to be happening here. This is a feature not a bug.
+
+## A Bit About Validators
+
+eris:db utilizes the tendermint consensus engine under the hood (on our roadmap is to be able to provide eris:db's [comprehensive RPC and application manager portion over various consensus engines](https://eng.erisindustries.com/blockchains/2015/12/31/on-blockchain-clients-in-2016/)).
+
+The tendermint consensus engine requires that > 66.666666666666666% of the bonded stake is present in a round of voting in order to add a block to the chain. When we only started one node on this chain, and very much unlike proof of work consensus engines, the chain will not progress by itself. This is because there was only one node on the network and it doesn't actually have any bonded stake. Remember we started the `advchain_root_000` node, which according to the genesis.json and validators.csv file has bonded no stake.
+
+So how do we move this chain forward? Basically we have to start nodes which *do have* bonded stake and connect them together. When the bonded stake "present" on the network is > 2/3 of the total bonded stake then the chain will begin moving forward and blocks will be created.
+
+This trips up a lot of folks when starting to work with proof of stake consensus engines, especially those who are coming from proof of work style consensus engines. In the context of this `advchain` we are making now. We have seven validators, all with equal stake. These could represent seven parties to a deal, two parties to a deal (with control over the validators split amongst the parties) or anything in between. In order for the network to move forward (add blocks to the end of the chain), then >= 5 of the validator nodes will need to be available to the network.
+
+Note that it is **not** the "number of nodes" on the network which matters. Rather it is the **amount bonded** that matters. However for pilots and proofs of concept, we recommend giving validators the same number of tokens bonded and then the "number of nodes" can be used as a proxy for the amount of bonded stake which is present.
+
+So, instead of talking about validators, let's get this chain "turned on"!
+
+But before we do that, let's actually remove the chain for now so it doesn't get in our way.
 
 ```bash
-cat $chain_dir/genesis.json
+eris chains stop -rxf advchain
 ```
 
-This genesis.json, along with the priv_validator.json is what will be given to `eris chains new` in the next tutorial.
+# Where to next?
 
-If you look inside the `$chain_dir` directory you should see a genesis.json, a few csv files (which, now that we have the full genesis.json, are no longer needed), and one (or more) priv_validator.json files. For now, let's clean up a little bit, in the next tutorial we will go through deployin gthe validator nodes to cloud instances.
-
-```bash
-eris chains rm -x $chain_name
-```
-
-Boom. You're all set with your custom built, permissioned, smart contract-ified, blockchain.
-
-**N.B.** You will want to export your keys onto the host at this point so that you have them backed up. Please see [this tutorial](../tool-specific/keyexporting) on how to do that.
-
-This particular chain won't run out of the box though. Why? Because you'll need to deploy the validators and connect them to one another. This will be the subject of [the next tutorial in this series](../chaindeploying).
-
-
+**Let us [deploy our chain to the cloud](/tutorials/advanced/chaindeploying).**

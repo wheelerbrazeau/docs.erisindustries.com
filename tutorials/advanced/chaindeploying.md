@@ -5,7 +5,7 @@ title: "Tutorials | Deploying your Permissioned Chain"
 
 ---
 
-Deploying and connecting your permissioned chains is not as difficult as [making a permissioned chain](../chainmaking), but it does require some careful work. This tutorial will cover the basics of deploying and connecting your blockchain nodes.
+Deploying and connecting your permissioned chains is not as difficult as [making a permissioned chain](/tutorials/advanced/chainmaking), but it does require some careful work. This tutorial will cover the basics of deploying and connecting your blockchain nodes.
 
 This tutorial is a continuation of the previous tutorial on making a permissed chain, so if you have not gone through that tutorial, then please do so before working through this tutorial.
 
@@ -13,182 +13,126 @@ This tutorial is a continuation of the previous tutorial on making a permissed c
 
 In general what is going to happen here is that we are going to establish what we at Eris call a "peer sergeant major" node who is responsible for being the easy connection point for any nodes which need to connect into the system. While we understand that decentralized purists will not like the single point of failure, at this point it is the most viable way to orchestrate a blockchain network.
 
-In addition to the one "peer sergeant major" we will also deploy four "peer sergeants" who will be cloud based validator nodes. For the purposes of this tutorial we will be using DigitalOcean droplets and [docker-machine](https://docs.docker.com/machine/) to create these cloud instances and to deploy the blockchains onto the droplets.
-
-Of course it is not essential for you to use DigitalOcean, docker-machine works well with a variety of public and private cloud providers / management systems. Indeed, you don't even need docker-machine if you have docker and eris installed on the machine and you are able to ssh into the machine.
-
-The reason why the cloud provider + docker-machine paradigm is interesting is that it is capable of provisioning nodes, starting, stopping, restarting nodes, and automating the docker connection from your local machine. This means, functionally, that one can be working from a laptop and in one command connect and deploy docker containers without having to ssh into the boxes or do very much at all (bear with us and we'll show you how it works over the course of this tutorial).
-
-You can also use Virtualbox to run the validator nodes entire only your laptop if you wish.
+In addition to the one "peer sergeant major" we will also deploy six "peer sergeants" who will be cloud based validator nodes.
 
 ## A Note Regarding This Tutorial
 
 The `eris` toolchain is designed to be very unix like, and as such we are able to craft most of what is needed in simple bash scripts which any competant developer should be able to understand. Bash really, truly, is the common demoninator as it does not require any specialized language specific knowledge beyond a bare minimum to understand what is happening.
 
-For this tutorial, we have kept the bash scripting to a bare minimum, but should you have any questions regarding any of the bash scripting, please let us know on our [Support Forums](https://support.erisindustries.com) and we will endeavor to make more clear what any commands that are unclear are actually doing.
+For this tutorial, we have kept the bash scripting to a bare minimum, but should you have any questions regarding any of the bash scripting, please let us know [here](https://github.com/eris-ltd/docs.erisindustries.com/issues) and we will endeavor to make more clear what any commands that are unclear are actually doing.
 
 ## Dependencies
 
-Please install docker-machine. If you are on OSX or Windows and have installed Docker Toolbox per Eris' [getting started tutorial](../getting-started) then you will have docker-machine installed for you. If you are on Linux, please see the [docker-machine installation instructions](https://docs.docker.com/machine/install-machine/) to get yourself setup.
+This sequence of tutorials assumes that you have an understanding of the `eris` tooling to the point we ended in our [101 tutorial sequence](/tutorials/getting-started/).
 
-You can test your installation with:
+This sequence of tutorials also assumes that you have worked through a few of the eris tool-specific tutorials. Namely:
 
-```
-docker-machine --version
-```
+* [Docker Machine](/tutorials/tool-specific/docker_machine/)
 
-**ProTip** set an alias for docker-machine in your appropriate shell file, `~/.bashrc`, `~/.zshrc`, etc. (whichever is appropriate for your shell) with:
+This tutorial assumes you have worked through the following advanced tutorials:
 
-```bash
-alias dm="docker-machine"
-```
-
-Reload your shell and you'll be all set up. For the purposes of this tutorial, we'll be using the full `docker-machine` rather than an alias, but most of us at Eris have some sort of alias set up as we use docker-machine quite a lot.
-
-The second thing we will need to do is to acquire a Digital Ocean API key. Please log into to your DigitalOcean account and [go here](https://cloud.digitalocean.com/settings/applications). If you do not have a DigitalOcean account and instead prefer to use AWS, Rackspace, or another cloud provider then you will need to see the [docker-machine documentation for that cloud provider](https://docs.docker.com/machine/drivers/) to properly craft the `docker-machine create` commands we are about to embark upon.
+* [Get Started in the Cloud](/tutorials/advanced/cloud-getting-started/)
+* [Advanced Chain Making](/tutorials/advanced/chainmaking)
 
 ## Overview of Tutorial
 
-In general we are going to take three steps in order to get the chain setup:
+In general we are going to take two steps in order to get the chain setup:
 
-1. Create the peer machines we will be using
-2. Deploy the chain to each machine using `eris`
-3. Connect into the chain locally
+1. Deploy the chain to each machine using `eris`
+2. Connect into the chain locally
 
-# Step 1. Create the Peer Machines
+# Step 1. Deploy the Chain to Each Machine
 
-One of the greatest things about docker-machine is how easy it makes it to provision cloud instances on our behalf. Let's see how this works. docker-machine has a `ton` of options in order to create a new machine. Check it out with:
-
-```
-docker-machine create -h
-```
-
-But we don't need to worry too much about all of those options. We just want to focus on the digital ocean ones. So let's use a bit of shell magic to do the filtering for use:
+Now that we have our machines created we're ready to deploy the chain. We need to do one thing before we deploy the chain: we're going to need to change the config.toml files.
 
 ```bash
-docker-machine create -h | grep digital
-```
-
-Now. That's better. Much easier to see what we're looking at. Ready or not, let's create a droplet.
-
-```bash
-TOKEN=YOUR_TOKEN_FROM_DIGITAL_OCEAN
-docker-machine create --driver digitalocean \
-  --digitalocean-access-token $TOKEN \
-  --digitalocean-region ams3 \
-  idiaminchain-psm
-```
-
-Now let's break that down. The first thing we do is to save our digital ocean API key into a shell variable. Then we launch the create command. We use the `--driver` flag to tell docker-machine to deal with Digital Ocean, then we add our API key. Then we tell it to use the Digital Ocean data center named `ams3`. You can find the appropriate Digital Ocean data center list in their documentation. Finally, we give the machine a name. We have chosen to name it after the chain name and `psm` (for peer sergeant major). This machine will act as in the capacity described above for the peer sergeant major.
-
-Now to create the four other peer sergeants.
-
-```bash
-docker-machine create --driver digitalocean \
-  --digitalocean-access-token $TOKEN \
-  --digitalocean-region fra1 \
-  idiaminchain-ps1
-docker-machine create --driver digitalocean \
-  --digitalocean-access-token $TOKEN \
-  --digitalocean-region sgp1 \
-  idiaminchain-ps2
-docker-machine create --driver digitalocean \
-  --digitalocean-access-token $TOKEN \
-  --digitalocean-region tor1 \
-  idiaminchain-ps3
-docker-machine create --driver digitalocean \
-  --digitalocean-access-token $TOKEN \
-  --digitalocean-region sfo1 \
-  idiaminchain-ps4
-```
-
-What's happening here is that essentially we're just repeating the same command as for the peer sergeant major four times to create the other nodes with two notable differences. First we are putting these in different data centers around the world (mix and match data centers however makes sense for your application); second we are changing the names of the machines from peer sergeant major to peer sergeant 1, peer sergeant 2, etc.
-
-OK. Now our peer machines are all set up.
-
-# Step 2. Deploy the Chain to Each Machine
-
-Now that we have our machines created we're ready to deploy the chain. Although a bit outside of the scope of this tutorial, you will need to create `priv_validator.json` files for each of the peer sergeants and the peer sergeant major. For more on how to create these files see [the chain making tutorial](../chainmaking), but to review the basic command we use is:
-
-```bash
-eris keys convert $addr > priv_validator.json
-```
-
-Create five directories in your `~/.eris/chains` folder (Note, on Eris < 0.11 this was the `~/.eris/blockchains` folder). Call them the same thing as the docker-machine name. Then copy the genesis.json we created in the previous tutorial into each of the five directories as well as the *unique* priv_validator.json which matches the appropriate key for that validator into the folder. Now we're going to need to change the config.toml files.
-
-```bash
-cd ~/.eris/chains/idiaminchain-psm
-cp ../default/server_conf.toml .
+cd ~/.eris/chains/advchain
 cp ../default/config.toml .
 ```
 
-Repeat the above for each of the directories. One thing we need to get is the ip address of the peer sergeant major (the `idiaminchain-psm` node). We can do this with a very simple command:
-
-```
-docker-machine ip idiaminchain-psm
-```
-
-Please copy that to your clipboard or remember it somehow because we are about to need it. Now we will want to update each of these files in the text editor of our choice slightly. Open up the five config.toml files and change the following lines
-
-```toml
-moniker = "idiaminchain-ps1"
-seeds = "IP:46656"
-```
-
-For each of the nodes, peer sergeant master, peer sergeant 2, etc., you'll want to change the `ps1` in the above to match the node name (so, `idiaminchain-ps1`, etc.). You'll want to replace `IP` in the above with the appropriate ip address you retrieved from the  `docker-machine ip` command. When you're editing the config file for the peer sergeant major you can leave the seeds to be an empty string. So that config.toml lines should look like this:
-
-```toml
-moniker = "idiaminchain-psm"
-seeds = ""
-```
-
-### For `eris` < 0.11.0
-
-Finally, we want to change one last file, the chain definition file.
+Before we edit the file, let's get the IP address of our peer sergeant major node.
 
 ```bash
-eris chains edit $chain_name
+docker-machine ip my-advchain-val-000
 ```
 
-That command will allow you to edit the chain definition file. Change the ports line (or add it if it does not exist) to the `[service]` section:
+You'll want to copy that IP address.
+
+Now let's open the `~/.eris/chains/advchain/config.toml` file in our favorite text editor. Edit the config file so it looks like this:
 
 ```toml
-ports = [ "1337:1337", "46656:46656", "46657:46657" ]
+moniker = "something_different"
+seeds = "XX.XX.XX.XX:46656"
+fast_sync = true
+db_backend = "leveldb"
+log_level = "debug"
+node_laddr = "0.0.0.0:46656"
+rpc_laddr = "0.0.0.0:46657"
+vm_log = false
 ```
 
-### For all `eris` versions
+Note that in the `seeds` field you will use the IP address from docker-machine ip command rather than the `XX.XX.XX.XX` in the above.
 
-What that will do is to `publish` the ports from the container to the host on the same exact port. In `eris` >= 0.11.0 this is done automatically for you. Understanding the ports is important for distributed software for this reason. If the blockchains *think* they are running on port X, but that port is exposed to the internet as port Y when they are doing their advertising to their peers they will be saying, "Hey, I'm located on IP address Z on port X". But the problem is that from the internet's perspective they should really be saying "Hey, I'm located on IP address Z on port Y". So at Eris we routinely recommend that you simply "flow through" the ports rather than trying to do anything funky here.
+Now we will copy the config.toml into all of our directories.
+
+```bash
+find . -mindepth 1 -maxdepth 1 -type d -exec cp config.toml {} \;
+```
+
+Now it's time to turn on the chain on our peer server / validator nodes.
+
+But first, a sidebar about ports. Understanding the ports is important for distributed software. If the blockchains *think* they are running on port X, but that port is exposed to the internet as port Y when they are doing their advertising to their peers they will be saying, "Hey, I'm located on IP address Z on port X". But the problem is that from the internet's perspective they should really be saying "Hey, I'm located on IP address Z on port Y".
+
+So at Eris we routinely recommend that you simply "flow through" the ports rather than trying to do anything funky here; this means that whatever port you select in the `laddr` fields and in the chain definition file, that you publish the same port on the host (meaning don't have something like `11111:46656` in your chain definition file). It can be made to work, but it requires some doing to do that right. But for now we will only be running one chain on each of our cloud validators so there will not be any port conflicts to worry about.
 
 One thing to watch if you hard code the ports which the host machine will expose is that you will need to have these be unique for each chain so you will either only be able to run one chain per node or you'll need to use different ports for the other chain.
-
-Once that is complete, we're ready to deploy the chains.
 
 Deploying your chain to a specific machine with eris is pretty simple.
 
 ```bash
-eris chains new --dir $chain_dir --api $chain_name --machine $machine_name
+for i in `seq 0 6`
+do
+  eris chains new --dir advchain/"advchain_validator_00$i" --machine "my-advchain-val-00$i" advchain
+done
 ```
 
-You'll need to replace `$chain_dir` in the above with the appropriate directory you created in ~/.eris/chains (e.g., ~/.eris/chains/idiaminchain-psm, etc.) (you only need the part after the ~/.eris/chains, so `idiaminchain-psm` or whatever), where `$chain_name` is the name of the chain you are using, so `idiaminchain` and where `$machine_name` is the name of the machine which should be deployed to.
+You're chain should now be running.
+
+We're now going to start a few services which help us manage cloud instances.
+
+1. We're going to start a `logsrotate` service. This service is **absolutely essential** when working with cloud boxes. We have had **dozens** of cloud nodes overfill on us due to logs overloading the allocated storage space on the node. To overcome this, we use a [logs rotator service](https://github.com/tutumcloud/logrotate) which disgards the old logs.
+2. To couterbalance this we also will be starting a `logspout` service. This service will "spout" our logs to a logs "collector" service. To provide this service we use PapertrailApp, but [you could use others](https://github.com/gliderlabs/logspout).
+3. We're going to start a `watchtower` service. This service will ping the docker hub for the images on the docker machine and if there are any updates to the image, they will automatically pull in the updates and gracefully restart all our containers for us. We can do this because of docker's fine grained tags system allows us to fine tune what docker image we are using. Users get the benefit when turning a `watchtower` service on that any tested pushes or security fixes which the service providers push to the docker hub will automatically be updated within about 5 minutes of pushing.
+
+But first we need to make a simple change to one file. Let's edit the logspout service.
+
+```bash
+eris services edit logspout
+```
+
+In this file you'll edit the following line:
+
+```toml
+command = "syslog://logs2.papertrailapp.com:XXXX"
+```
+
+You can use any of the services logspout provides. Or if you use PaperTrail, then just update with your port. Now let's get those services turned on.
+
+```bash
+for i in `seq 0 6`
+do
+  eris services start watchtower logsrotate logspout --machine "my-advchain-val-00$i"
+done
+```
+
+That's it, we added all that functionality to our system with that little command!
 
 # Step 3. Connect Into The Chain Locally
 
-Now we need to connect into the chain from our local nodes now that the cloud based validator nodes are all set up. The first thing we need to do as with the peer sergeant nodes, is to edit the config.toml. If you followed the [chain making tutorial](../chainmaking) then you will have the `admin` priv_validator.json and the genesis.json already located in ~/.eris/chains/idiaminchain. So, let's use those to get connected to the chain locally. First, edit the config file ~/.eris/chains/idiaminchain/config.toml. As wil the peer sergeants, we'll use the IP address of the peer sergeant major to perform the initial "check in" with the peers. After that, the peers will handle gossiping who's currently "hanging out".
-
-```toml
-moniker = "idiaminchain-admin"
-seeds = "IP:46656"
-```
-
-The moniker, for the record, needs to be unique on the network but can be whatever string you'd like it to be.
-
-Now we should change back the ports we "hard coded" in the chain definition file. So use `eris chains edit $chain_name` and remove the ports line to revert back to the default.
-
-Now with that done, we have to get the chain rolling locally. That will take some time.
+Now we need to connect into the chain from our local nodes now that the cloud based validator nodes are all set up. That will take some time.
 
 ```bash
-eris chains new --dir $chain_name --api $chain_name
+eris chains new --dir advchain/advchain_root_000 advchain
 ```
 
 Check that it is running:
@@ -200,18 +144,30 @@ eris chains ls
 And see what its doing:
 
 ```bash
-eris chains logs $chain_name
+eris chains logs advchain -f
 ```
+
+(`ctrl+c` to exit the logs following.) You can also pull the logs for one of the validators
+
+```bash
+eris chains logs advchain -f --machine my-advchain-val-001
+```
+
+Change the machine name to cycle thru the logs and make sure blocks are coming in.
 
 Oh wait. That didn't take long at all. Now you're all set up. Connected up to custom built, permissioned smart contract network with cloud based validators, given yourself admin permissions, and in what essentially has boiled down to move a few files around, edit a few lines in a few config files, and enter a few commands, we're ready to build out our applications.
 
-**Protip**: remove those Digital Ocean droplets when you're done with them using:
+# Clean Up
+
+Let's remove those validator machines since we will not use them for the rest of these tutorials and we don't want to drive up our cloud hosting bills any more!
 
 ```bash
-docker-machine rm idiaminchain-psm
-docker-machine rm idiaminchain-ps1
-docker-machine rm idiaminchain-ps2
-docker-machine rm idiaminchain-ps3
-docker-machine rm idiaminchain-ps4
+for i in `seq 0 6`
+do
+  docker-machine rm -y "my-advchain-val-00$i"
+done
 ```
 
+# Where to next?
+
+**Let us [do some more advanced contracts work](/tutorials/advanced/contractsdeploying).**

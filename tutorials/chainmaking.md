@@ -11,7 +11,6 @@ This tutorial is structured to walk individuals through parts of the eris develo
 
 **Note** -- This tutorial is built for Eris versions `>= 0.11.1`. For other versions of this tutorial please see below:
 
-* [v0.10](/tutorials/deprecated/chainmaking-v0.10/)
 * [v0.11.0](/tutorials/deprecated/chainmaking-v0.11.0/)
 
 # Introduction

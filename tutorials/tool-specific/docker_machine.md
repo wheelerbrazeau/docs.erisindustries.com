@@ -33,6 +33,8 @@ Future releases of `eris` will further simplify the process (and abstract away t
 
 **End N.B.**
 
+**Protip** The marmots use docker-machine a *lot*. As such we normally `alias dm=docker-machine` to our ~/.bashrc, ~/.zshrc, etc.
+
 # Setup & Basic Commands
 
 This section is tailored for OSX/Windows. If you are on Linux you can use if you like, but mostly it should be thought of as informational.

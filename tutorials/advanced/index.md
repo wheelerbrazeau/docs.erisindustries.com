@@ -5,11 +5,44 @@ title: "Tutorials | Advanced"
 
 ---
 
-This is a series of Advanced Tutorials. These tutorials are meant to be used **only** after the [introductory level](../) tutorial sequence has completed.
+This is a series of Tutorials aimed at Advanced-Beginners.
 
-[Roll Your Own eris:db Blockchain (advanced)](chainmaking/)
+These tutorials are meant to be used **only** after the [introductory level](../) tutorial sequence has completed and your inner marmot feels like this guy:
 
-[Deploy an advanced eris:db Blockchain to multiple cloud nodes](chaindeploying/)
+{% image triumphant_marmot.jpg %}
 
-[Learn How to **Really** Make a Blockchain application](servicesmaking/)
+Over this series of tutorials we will make you more like this gal:
 
+{% image ready_marmot.jpg %}
+
+The tutorial follow the same sequence as the beginner tutorials only with more depth and assumptions of reader's knowledge
+
+## Step 1 -- Install the Eris Platform
+
+[Install Eris on Cloud Instances](cloud-getting-started)
+
+## Step 2 -- Roll your own Blockchain in seconds
+
+[Roll Your Own Chain](chainmaking/)
+
+[Deploy Your Own Chain to Cloud Nodes](chaindeploying/)
+
+## Step 3 -- Build (and run) your distributed application
+
+[Deploy Your Contracts](contractsdeploying/)
+
+## Step 4 -- Share Your Work
+
+[Make an Eris Service](servicesmaking/)
+
+## Solidity Tutorials
+
+[See our solidity smart contract language tutorials](/tutorials/solidity/)
+
+## Beginner Tutorials
+
+[See our beginner tutorials](/tutorials/)
+
+## Tool Specific Tutorials
+
+[See our tool specific tutorials](/tutorials/tool-specific/)
