@@ -87,7 +87,13 @@ So at Eris we routinely recommend that you simply "flow through" the ports rathe
 
 One thing to watch if you hard code the ports which the host machine will expose is that you will need to have these be unique for each chain so you will either only be able to run one chain per node or you'll need to use different ports for the other chain.
 
-Deploying your chain to a specific machine with eris is pretty simple.
+Let's do one more thing before we start the chain on a bunch of machines. If you've been using eris so far you may have had to say `yes` when the marmots asked you if you wanted to pull images. Let's tell the marmots to shut up.
+
+```bash
+export ERIS_PULL_APPROVE="true"
+```
+
+Many of us at Eris put that in our ~/.bashrc, ~/.zshrc or equivalent. Now, deploying your chain to a specific machine with eris is pretty simple.
 
 ```bash
 for i in `seq 0 6`
