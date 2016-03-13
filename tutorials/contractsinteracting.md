@@ -50,6 +50,21 @@ If you are behind a firewall then you may need to let npm know about your proxy.
 proxy=http://myproxy.com
 ```
 
+<hr />
+
+If you get an error which looks like this:
+
+```irc
+> bufferutil@1.2.1 install /root/.eris/apps/idi/node_modules/bufferutil
+> node-gyp rebuild
+
+gyp ERR! build error
+gyp ERR! stack Error: not found: make
+gyp ERR! stack     at F (/usr/lib/node_modules/npm/node_modules/which/which.js:78:19)
+```
+
+Then you will need to install `make` on your platform with `apt-get install make` (or the equivalent package manager for your operating system).
+
 **End Troubleshooting**
 
 # Make the Main Application Script
