@@ -1,6 +1,6 @@
 ---
 
-layout: wide
+layout: docs
 title: "Tutorials | Getting Started With Eris in the Cloud"
 
 ---
