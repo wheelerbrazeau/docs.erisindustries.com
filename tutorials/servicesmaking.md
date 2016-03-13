@@ -62,13 +62,13 @@ var
   address = require('./epm.json').deployStorageK,
   fs = require('fs'),
   abi = JSON.parse(fs.readFileSync("./abi/" + address)),
-  account = require('./account.json'),
+  account = require('./accounts.json'),
   chainUrl = "http://localhost:1337/rpc",
   manager, contract;
 
 // Instantiate the contract object manager using the chain URL and the account
 // data.
-manager = contracts.newContractManagerDev(chainUrl, account);
+manager = contracts.newContractManagerDev(chainUrl, account.simplechain_full_000);
 
 // Instantiate the contract object using the ABI and the address.
 contract = manager.newContractFactory(abi).at(address);
@@ -132,6 +132,14 @@ eris chains ls
 
 If your simplechain is running then you're chain is on, please skip to the last step in this `Quick Test` section.
 
+If your simplechain is present but not running then just start it with.
+
+```bash
+eris chains start simplechain
+```
+
+If your simplechain is not present then just start it with.
+
 ```bash
 eris chains new simplechain --dir simplechain
 ```
@@ -144,12 +152,17 @@ eris chains ls
 
 ## Step 2: Deploy the Contracts.
 
-```bash
-cd ~/.eris/apps/idi-service
-eris pkgs do --chain simplechain --address $ADDR
-```
+Let's get our address as in previous tutorials:
 
-Where `$ADDR` is the address you're using.
+```bash
+addr=$(cat $chain_dir/addresses.csv | grep simplechain_full_000 | cut -d ',' -f 1)
+echo $addr
+```
+Now we're set up.
+
+```bash
+eris pkgs do --chain simplechain --address $addr
+```
 
 **Troubleshooting**
 
@@ -188,6 +201,14 @@ Idi's number is:                        44
 ```
 
 If you do not have any errors then you're all set to go.
+
+**Troubleshooting**
+
+If you reset your idi contract to >= 150 as noted in the beginning of this tutorial but when you ran the `node app.js` above your Idi number was at 5, then here is what happened. You are using the same chain, but you reran `eris pkgs do` this left the artifact of `epm.json` in the `idi-service` directory which pointed to the "new" contract that had the default number (5) instead of the "old" contract which we used for the `idi` directory in the previous tutorial.
+
+Fixing this is easy. What we want to do is to copy over the `epm.json` from the `~/.eris/apps/idi` directory into this directory so that when the `app.js` in the `idi-service` directory runs that it will talk to the "old" contract which has the number >= 150.
+
+**End Troubleshooting**
 
 # Make a Dockerfile
 
@@ -321,19 +342,22 @@ eris services logs idi
 You should see an error in the logs that looks something like this:
 
 ```irc
+npm info it worked if it ends with ok
+npm info using npm@2.14.20
+npm info using node@v4.4.0
+npm info prestart idis_app@0.0.1
+npm info start idis_app@0.0.1
+
 > idis_app@0.0.1 start /usr/src/app
 > node app.js
 
 Error callback from sendTransaction
-/usr/src/app/app.js:28
-    if (error) { throw error }
-                 ^
-
-Error: Error: connect ECONNREFUSED 127.0.0.1:1337
+[Error: Error: connect ECONNREFUSED 127.0.0.1:1337
     at Object.exports._errnoException (util.js:870:11)
     at exports._exceptionWithHostPort (util.js:893:20)
-    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1063:14)
-...
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1057:14)]
+npm info poststart idis_app@0.0.1
+npm info ok
 ```
 
 This is expected. Not to worry.
@@ -356,6 +380,12 @@ Update the file to look like this:
 
 name = "idi"
 
+description = """
+# idis service; cause i'm a learning marmot
+"""
+
+status = "alpha" # alpha, beta, ready
+
 [service]
 name = "idi"
 image = "idiservice"
@@ -369,8 +399,9 @@ name = "Casey Kuhlman"
 email = "casey@erisindustries.com"
 
 [location]
-
-[machine]
+dockerfile = ""
+repository = ""
+website = ""
 ```
 
 What changed here? Well we added a `dependency` of the chain. And we used the eris name of the chain we've been working with. We could also have that link be:

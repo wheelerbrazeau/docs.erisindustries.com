@@ -52,34 +52,6 @@ proxy=http://myproxy.com
 
 **End Troubleshooting**
 
-**Temporary Hack**
-
-Currently we are in the process of refactoring eris-db.js and eris-contracts.js to use eris-keys like the rest of the eris stack does in an effort to be fully modular. This effort is not currently completed so at this time, eris-db.js and eris-contracts.js will sign themselves. Because of this we need to give them the address, public key and private key in a small json file. First let's see what our proper keys are using eris keys and then we'll add them into the `account.json`.
-
-```bash
-eris keys convert $addr
-```
-
-Where `$addr` in the above is the key you want to use to interact with the contracts. If you followed the [simple chainmaking tutorial](/tutorials/chainmaking) then you'll want to use the validator address you created on the chain for simplicity's sake. The `$addr` shell variable should be set for you if you have been following this tutorial. That command will display a json which looks something like this:
-
-```json
-{"address":"1FDD813D68F73BBABFEA6EF6FB83118441CFC347","pub_key":[1,"993C19257009531BA79D481D764553703DEE82B11F7C514DD0F99BDED5E3CAFF"],"priv_key":[1,"E6D862EF63AC414AF40C6AAD9D73A1620747CFF29021678B704231C12C18627F993C19257009531BA79D481D764553703DEE82B11F7C514DD0F99BDED5E3CAFF"],"last_height":0,"last_round":0,"last_step":0}
-```
-
-What we need is the `address` field, the long string in the `pub_key` field and the long string in the `priv_key` field.
-
-Now, we'll add these to a new file we'll create and call `account.json` like so (remember to replace all the fields with the result of `eris keys convert`:
-
-```json
-{
-  "address": "1FDD813D68F73BBABFEA6EF6FB83118441CFC347",
-  "pubKey": "993C19257009531BA79D481D764553703DEE82B11F7C514DD0F99BDED5E3CAFF",
-  "privKey": "E6D862EF63AC414AF40C6AAD9D73A1620747CFF29021678B704231C12C18627F993C19257009531BA79D481D764553703DEE82B11F7C514DD0F99BDED5E3CAFF"
-}
-```
-
-**End Temporary Hack**
-
 # Make the Main Application Script
 
 Once we have that set up, then we'll make an `app.js` file and we'll add the following contents into it:
@@ -103,8 +75,8 @@ var idisAbi = JSON.parse(fs.readFileSync("./abi/" + idisContractAddress));
 
 // properly instantiate the contract objects manager using the erisdb URL
 // and the account data (which is a temporary hack)
-var accountData = require('./account.json');
-var contractsManager = erisC.newContractManagerDev(erisdbURL, accountData);
+var accountData = require('./accounts.json');
+var contractsManager = erisC.newContractManagerDev(erisdbURL, accountData.simplechain_full_000);
 
 // properly instantiate the contract objects using the abi and address
 var idisContract = contractsManager.newContractFactory(idisAbi).at(idisContractAddress);
@@ -144,7 +116,7 @@ function setValue(value) {
 getValue(changeValue);
 ```
 
-**N.b.** -- for *not Linux users*, please see the comments on lines 6-9 about the `var erisdbURL = "http://localhost:1337/rpc";` line of the script (spoiler alert, only do that on Linux).
+**N.B.** -- for *not Linux users*, please see the comments on lines 6-9 about the `var erisdbURL = "http://localhost:1337/rpc";` line of the script (spoiler alert, only do that on Linux).
 
 The code should be self explanatory if you understand even a little bit of javascript. Once we properly instantiate all of the objects then there are three functions.
 
@@ -174,6 +146,12 @@ But in the [previous tutorial](/tutorials/contractsdeploying/) we only worked wi
 ```
 
 The json file is the result of each of the jobs. What we really need from this file is the contracts address that was deployed (the key to the `deployStorageK` field) so that the app.js script knows what contract on the chain it should be "talking" to.
+
+We need to do one final thing before we finish this section. We need to copy over the accounts.json which was an artifact of the chain making process and is included in our chains directory into this directory so that it can be consumed by the eris-contracts.js library.
+
+```bash
+cp $chain_dir/accounts.json .
+```
 
 **Troubleshooting**
 

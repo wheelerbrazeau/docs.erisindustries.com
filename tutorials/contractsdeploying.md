@@ -136,6 +136,24 @@ Both the `key` and the `val` (which in other testing frameworks are the `given` 
 
 # Deploy (and Test) The Contract
 
+First, let's get our chain turned back on.
+
+```bash
+eris chains ls
+```
+
+If simplechain is not running, then turn it on with:
+
+```bash
+eris chains start simplechain
+```
+
+If, when you ran `chains ls`, simplechain is not among the Active Containers then restart it with:
+
+```bash
+eris chains new simplechain --dir $chain_dir_this
+```
+
 Now, we are ready to deploy this world changing contract. Make sure you are in the `~/.eris/apps/idi` folder, or wherever you saved your epm.yaml. Note that this is a very common pattern in simple contract testing and development; namely to (1) deploy a contract; (2) send it some transactions (or `call`s); (3) query some results from the contract (or `query-contract`s); and (4) assert a result. As you get moving with contract development you will likely find yourself doing this a lot.
 
 ```bash
