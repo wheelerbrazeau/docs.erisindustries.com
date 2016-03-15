@@ -274,6 +274,19 @@ If they're different reset the chain (see above for instructions).
 
 When that is done, reset the chain and you should be good to go.
 
+<hr />
+
+If you have an error which complains about how a container cannot be removed which looks something like this:
+
+```irc
+Error removing intermediate container 1f3a1d541241:
+Driver btrfs failed to remove root filesystem
+1f3a1d541241e757d48f34329508253e9ee139380b7b914a3b1104677eb0e8ee:
+Failed to destroy btrfs snapshot: operation not permitted
+```
+
+Then rerun the `pkgs do` command with the `--rm` flag at the end which will stop the containers from trying to be removed as part of the tear down sequence.
+
 **End Troubleshooting**
 
 Since we have a deployed contract on a running chain, please do take a look at the available options for eris contracts with:
