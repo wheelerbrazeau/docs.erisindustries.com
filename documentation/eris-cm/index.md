@@ -5,7 +5,9 @@ title: "eris:chain_manager Version Documentation"
 
 ---
 
-[Latest](latest/eris-cm)
+[Latest](0.11.3/eris-cm)
+
+[0.11.4](0.11.4/eris-cm)
 
 [0.11.3](0.11.3/eris-cm)
 
