@@ -9,7 +9,7 @@ The eris stack has undergone many changes in the past 8 months. When I joined in
 
 This post is intended to provide a high level overview and a detailed explanation of how the eris stack is, well, stacked. [Modularity is a strong focus](https://eng.erisindustries.com/tutorials/2015/09/05/docker-and-eris/), greatly facilitated by [docker](https://docker.com). I'll be focusing on how the tools fit together while painting a path through the tutorial series. The complicated task of orchestrating all the various requirements for a smart-contract-focused blockchain is exactly why we went all-in on docker despite various ongoing pain points. We like to think of [eris:cli](https://docs.erisindustries.com/documentation/eris/) as "docker for blockchains".
 
-{{ page.date | date: "%Y" | append:'/eris-stack-v2.png' | image }}
+{% image eris-stack-v2.png %}
 
 Let's get started! The above diagram shows the relationship between most of the tools in the eris stack. Before docker, each had to be installed individually. Docker also provides the ability to seamlessly link the running containers, so that the individual processes can talk to each other. When deploying many nodes, this is known as service discovery and greatly facilitates large-scale deployments. There are several considerations for thinking about the mechanics of your chain as an application. The first three suffice if your goal is writing and testing smart contracts. The rest are for building a useable application at scale.
 
