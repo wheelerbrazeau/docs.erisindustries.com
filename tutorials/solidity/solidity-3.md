@@ -11,7 +11,7 @@ title: "Tutorials | Solidity 3"
 
 ### Introduction
 
-This blog post is about the language features of Solidity. I will be going over some of the basic ones, types, interfaces, events, errors (or lack thereof), and give a few examples of how these works in practice.
+This blog post is about the language features of Solidity. I will be going over some of the basic ones, types, interfaces, events, errors (or lack thereof), and give a few examples of how these work in practice.
 
 ### Types - the basics
 
@@ -341,9 +341,9 @@ One way of circumventing this is to only allow contracts to be added in very con
 
 ### Briefly about errors
 
-There is no real error handling system in Solidity (yet). There are no `try - catch` or `throw` statements, or something to that effect. A lot of operations that throw errors or exceptions in most other languages does not, like for example division by zero (check the [yellow paper](http://gavwood.com/Paper.pdf) (PDF link)).
+There is no real error handling system in Solidity (yet). There are no `try - catch` or `throw` statements, or something to that effect. A lot of operations that throw errors or exceptions in most other languages do not, like for example division by zero (check the [yellow paper](http://gavwood.com/Paper.pdf) (PDF link)).
 
-Contract designers need to deal with errors themself. Solidity does some sanity checks on arrays and such, but will often respond simply by executing the `(STOP)` instruction. According to the developers, this is just put in as a placeholder until a more sophisticated error handling and recovery system is put in place.
+Contract designers need to deal with errors themselves. Solidity does some sanity checks on arrays and such, but will often respond simply by executing the `(STOP)` instruction. According to the developers, this is just put in as a placeholder until a more sophisticated error handling and recovery system is put in place.
 
 Being that Solidity and the EVM both are under development, I believe that sticking to a few good principles is best for now. I usually handle exceptions manually and keep a list of error codes that are passed back to the caller. This is different depending on the type of function, but generally:
 
@@ -351,4 +351,4 @@ If the function is a getter, return null value(s) in case of failure, and perhap
 
 If the function is not constant, return an error code.
 
-The error code for of normal execution (in both cases) is always `0`.
+The error code for normal execution (in both cases) is always `0`.
