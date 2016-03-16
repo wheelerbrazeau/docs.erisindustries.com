@@ -1,3 +1,10 @@
+---
+
+layout: docs
+title: "Tutorials | The Eris Stack Explained"
+
+---
+
 The eris stack has undergone many changes in the past 8 months. When I joined in July, the old stack was just about deprecated, docker had recently been embraced full tilt, and our blockchain orchestration tool was a couple months away from the 0.10.0 release. While making incremental contributions to eris-cli and fighting docker, I was also learning to stitch together our various tools natively. The process, albeit daunting (compared, say, to building a simple web app), is fairly straightforward once layed out clearly. 
 
 This post is intended to provide a high level overview and a detailed explanation of how the eris stack is, well, stacked. [Modularity is a strong focus](https://eng.erisindustries.com/tutorials/2015/09/05/docker-and-eris/), greatly facilitated by [docker](https://docker.com). I'll be focusing on how the tools fit together while painting a path through the tutorial series. The complicated task of orchestrating all the various requirements for a smart-contract-focused blockchain is exactly why we went all-in on docker despite various ongoing pain points. We like to think of [eris:cli](https://docs.erisindustries.com/documentation/eris/) as "docker for blockchains".
@@ -40,4 +47,6 @@ Time to build your service (app). But wait. What is eris-cli anyways, and why wo
 
 The last tricky part, now that we have a defined service, is to deploy it to the cloud with >1 node/validator. Here again, docker shines, this time as a machine. The eris tool has a global flag `--machine` which can be used to specify another docker daemon (on any number of other hosts) upon which to execute a command. Note: these docker machines will have been pre-created using your choice of cloud provider. See the [Eris <=> docker-machine tutorial](https://docs.erisindustries.com/tutorials//tool-specific/docker_machine/) for more information. The beauty of this feature is that the files needed for these deployments need only be on the host, and, of course, you only need install eris once. 
 
-There you have it. From A to Blockchains, this is how you get rolling with the marmots. Want a tutorial that we haven't provided? [Make an issue in our documentation repository!](https://github.com/eris-ltd/docs.erisindustries.com/issues).
+There you have it. From A to Blockchains, this is how you get rolling with the marmots. Want a tutorial that we haven't provided? [Make an issue in our documentation repository!](https://github.com/eris-ltd/docs.erisindustries.com/issues)
+
+{{ page.date | date: "%Y" | append:'/eris-stack-v2.png' | image }}
