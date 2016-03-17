@@ -35,7 +35,7 @@ Voila! Your app is ready for users. Of course, you'll want to build a user inter
 
 Above, I've highlighted the relevant repositories and some tutorials currently maintained as part of the Eris stack. So where should you even start? Next, we'll walk through one approach - the one I consider most intuitive for thinking about the design of you chain/application - though in practice you can probably start anywhere. This is how I do it when testing or implementing the toadserver/marmot checker.
 
-##The development lifecycle
+## The development lifecycle
 
 We start with the genesis file. The sets up your chain and contains approved validators, their initial coin distribution, any permissions, roles, or names can be assigned to them. Maybe you want 5, maybe you want 100. See [the advanced chain making tutorial](https://docs.erisindustries.com/tutorials/advanced/chainmaking/) for more info on creating chains. Since you'll need the public keys of everyone you'd like included, a key pair will need to be generated for each participant/validator. Either you do this all yourself and distribute the keys or ask each user to generate a pair themselves and provide the pubkey. For the latter, you'd pass in a `.csv` file on the `eris chains make --known` command. You could also try the [Blocklab](http://blocklab.levvel.io/) tool. Each have pros and cons that need to be carefully thought through. At any rate, it is always possible to update the validator set with a bond/unbond transaction, or, if they misbehave, their security deposit (bond) can be slashed: validator they are no longer. (More details in a future post).
 
