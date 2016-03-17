@@ -38,7 +38,9 @@ mkdir idi
 cd idi
 ```
 
-Now you'll make a file in this directory. Let's assume that is called idi.sol and has the following contents
+Now you'll make a file in this directory. There are multiple way to do this, however, perhaps the easiest is to enter in the following command cat>idi.sol then copy/paste the content listed below:  
+
+Note: *Make sure you are on the line below the last line of content*; then cmnd+d/ctrl+d. You can test to see if the content was copied correctly by typing in cat idi.sol
 
 ```javascript
 contract IdisContractsFTW {
@@ -58,7 +60,7 @@ What does this contract do? Well, it isn't very interesting we know. It merely `
 
 # Fixup your epm.yaml
 
-Next we need to make an epm.yaml and make it look something like this:
+Next we need to make an epm.yaml file (you can use the same process detailed directly above) and add the following content:
 
 ```yaml
 jobs:
@@ -173,7 +175,7 @@ You *should* be able to use any of the addresses you generated during the chainm
 
 Note that eris:package_manager can override the account which is used in any single job and/or, eris:package_manager can set a default `account` job which will establish a default account within the yaml. We find setting the default account within the yaml to usually be counter-productive because others will not be able to easily use your yaml unless they have the same keys in their `eris-keys` (which we **never** recommend). For more on using accounts [please see the jobs specification](/documentation/eris-pm/latest/jobs_specification/).
 
-That's it! Your contract is all ready to go. You should see the output in `epm.json` which will have the transaction hash of the transactions as well as the address if the deployed `idi.sol` contract.
+That's it! Your contract is all ready to go. You should see the output in `epm.json` which will have the transaction hash of the transactions as well as the address of the deployed `idi.sol` contract.
 
 **Troubleshooting**
 
