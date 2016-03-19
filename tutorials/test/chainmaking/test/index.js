@@ -1,6 +1,6 @@
 // Automated test of Tutorials | Making a Permissioned Chain (Simple)
 // - Eris v0.11
-// https://docs.erisindustries.com/tutorials/chainmaking/
+// https://docs.erisindustries.com/tutorials/chain-making/
 
 'use strict';
 

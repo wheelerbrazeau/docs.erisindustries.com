@@ -9,13 +9,13 @@ It is not necessarily a simple matter to "make" a permissioned chain. With the `
 
 This tutorial is structured to walk individuals through parts of the eris developer tool kit while also showing readers how to make an advanced permissioned blockchain. Note, during the course of this tutorial, the chain we will create is suitable for pilots iterating toward production, it is a bit more complicated than a simple local chain one only needs for testing simple contracts out in a solo environment.
 
-To create a very simple permissioned chain suitable for quick prototyping, please see our [simple chain making tutorial](../chainmaking/). This tutorial, on the other hand is made to walk through a (slightly) more complex permissioned chain.
+To create a very simple permissioned chain suitable for quick prototyping, please see our [simple chain making tutorial](/tutorials/chain-making/). This tutorial, on the other hand is made to walk through a (slightly) more complex permissioned chain.
 
 **Assumptions** -- This sequence of tutorials assumes that you have an understanding of the `eris` tooling to the point we ended in our [101 tutorial sequence](/tutorials/getting-started/).
 
 **Note** -- This tutorial is built for Eris versions >= 0.11 <= 0.11.2. For other versions of this tutorial please see:
 
-* [latest](/tutorials/advanced/chaindeploying/)
+* [latest](/tutorials/advanced/chain-deploying/)
 
 # Introduction
 
@@ -413,4 +413,4 @@ Boom. You're all set with your custom built, permissioned, smart contract-ified,
 
 **N.B.** You will want to export your keys onto the host at this point so that you have them backed up. Please see [this tutorial](../tool-specific/keyexporting) on how to do that.
 
-This particular chain won't run out of the box though. Why? Because you'll need to deploy the validators and connect them to one another. This will be the subject of [the next tutorial in this series](../chaindeploying).
+This particular chain won't run out of the box though. Why? Because you'll need to deploy the validators and connect them to one another. This will be the subject of [the next tutorial in this series](/tutorials/advanced/chain-deploying).

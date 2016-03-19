@@ -23,17 +23,17 @@ Then see our [quick start guide](getting-started/) to get you more like this mar
 
 ## Step 2 -- Roll your own Blockchain in seconds
 
-[Roll Your Own Chain](chainmaking/)
+[Roll Your Own Chain](chain-making/)
 
 ## Step 3 -- Build (and run) your distributed application
 
-[Deploy Your Contracts](contractsdeploying/)
+[Deploy Your Contracts](contracts-deploying/)
 
-[Interacting with Your Contracts](contractsinteracting/)
+[Interacting with Your Contracts](contracts-interacting/)
 
 ## Step 4 -- Share Your Work
 
-[Make an Eris Service](servicesmaking/)
+[Make an Eris Service](services-making/)
 
 ## Solidity Tutorials
 

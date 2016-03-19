@@ -28,18 +28,19 @@ and simple to wrangle the dragons of smart contract blockchains.
 # Using Eris
 
 - **[Getting Started With Eris](tutorials/getting-started/)**
-- [Troubleshooting your installation](tutorials/install-troubleshooting/)
-- [Create Your Own Permissioned Chain](tutorials/chainmaking/)
-- [Deploying Your Own Smart Contracts](tutorials/contractsdeploying/)
-- [Interacting with Your Own Smart Contracts](tutorials/contractsinteracting/)
-- [Collaborating on your application](tutorials/servicesmaking/)
+- [Create Your Own Permissioned Chain](tutorials/chain-making/)
+- [Deploying Your Own Smart Contracts](tutorials/contracts-deploying/)
+- [Interacting with Your Own Smart Contracts](tutorials/contracts-interacting/)
+- [Collaborating on your application](tutorials/services-making/)
 
 # Advanced Tutorials
 
 - [In Depth: Writing Your Own Smart Contracts](tutorials/solidity)
-- [In Depth: Create An Advanced Permissioned Chain](tutorials/advanced/chainmaking)
-- [In Depth: Deploy Your Advanced Permissioned Chain to Cloud Instances, and Connect it to Peer Network](tutorials/advanced/chaindeploying)
-- [In Depth: All About Services: Toadserver](tutorials/advanced/servicesmaking/)
+- [In Depth: Getting Started with Eris In the Cloud](tutorials/advanced/cloud-getting-started)
+- [In Depth: Create An Advanced Permissioned Chain](tutorials/advanced/chain-making)
+- [In Depth: Deploy Your Advanced Permissioned Chain to Cloud Instances, and Connect it to Peer Network](tutorials/advanced/chain-deploying)
+- [In Depth: Working with Complex Smart Contract Suites From Eris](tutorials/advanced/contracts-deploying)
+- [In Depth: All About Services: Toadserver](tutorials/advanced/services-making/)
 
 # Core Reference
 

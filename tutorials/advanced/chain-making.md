@@ -9,7 +9,7 @@ It is not necessarily a simple matter to "make" a permissioned chain. With the `
 
 This tutorial is structured to walk individuals through parts of the eris developer tool kit while also showing readers how to make an advanced permissioned blockchain. Note, during the course of this tutorial, the chain we will create is suitable for pilots iterating toward production, it is a bit more complicated than a simple local chain one only needs for testing simple contracts out in a solo environment.
 
-To create a very simple permissioned chain suitable for quick prototyping, please see our [simple chain making tutorial](/tutorials/chainmaking/). This tutorial, on the other hand is made to walk through a (slightly) more complex permissioned chain.
+To create a very simple permissioned chain suitable for quick prototyping, please see our [simple chain making tutorial](/tutorials/chain-making/). This tutorial, on the other hand is made to walk through a (slightly) more complex permissioned chain.
 
 **Note** -- This tutorial is built for Eris versions >= 0.11.3. For other versions of this tutorial please see below:
 
@@ -395,4 +395,4 @@ eris chains stop -rxf advchain
 
 # Where to next?
 
-**Let us [deploy our chain to the cloud](/tutorials/advanced/chaindeploying).**
+**Let us [deploy our chain to the cloud](/tutorials/advanced/chain-deploying).**

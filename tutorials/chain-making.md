@@ -127,7 +127,7 @@ In general you do not really need to mess with `server_conf.toml` unless you kno
 
 The three files you *may* need to edit are the `genesis.json` and `priv_validator.json` (both of which we're about to get "made" for us) and the `config.toml`.
 
-The `config.toml` file is generally edited to fill in the `seeds` and `moniker` fields. The `seeds` field (which is a misnomer because it accepts a string rather than an array, and as such should have been named `seed`) is used to point your consensus engine to the peer server it should connect into. For more information on how to deal with this please see our [advanced chain making tutorial](/tutorials/advanced/chainmaking/). The `moniker` field is "your node's name on the network". It should be unique on the given network.
+The `config.toml` file is generally edited to fill in the `seeds` and `moniker` fields. The `seeds` field (which is a misnomer because it accepts a string rather than an array, and as such should have been named `seed`) is used to point your consensus engine to the peer server it should connect into. For more information on how to deal with this please see our [advanced chain making tutorial](/tutorials/advanced/chain-making/). The `moniker` field is "your node's name on the network". It should be unique on the given network.
 
 The `genesis.json` is the primary file which tells eris chains how to instantiate a particular blockchain. It provides the "genesis" state of the blockchain including the accounts, permissions, and validators which will be used at the beginning of the chain. These can always be updated over the life of the chain of course, but the genesis.json provides the starting point. Luckily `eris` takes care of making this for you and there is very little which should be required for you in way of editing (unless you know what you're doing of course, in which case why are you reading this ;-) ).
 
@@ -169,7 +169,7 @@ cat ~/.eris/chains/toRemoveLater/addresses.csv
 
 The first two files can be used later to create a new genesis.json if the actual json gets lost. One of the things about this tooling is that it **creates** the keys for you. That is helpful in some circumstances. In other circumstances this is not helpful.
 
-In general, we recommend that if you are making a chain for a consortium that you have your consortium members **make their own keys** and then send the public key to you. Once you've assembled the keys then you will create an accounts.csv and validators.csv files in this format and then run `eris chains make` with the `--known` flag. More information on complex chain making is included in our [advanced chain making tutorial](/tutorials/advanced/chainmaking/).
+In general, we recommend that if you are making a chain for a consortium that you have your consortium members **make their own keys** and then send the public key to you. Once you've assembled the keys then you will create an accounts.csv and validators.csv files in this format and then run `eris chains make` with the `--known` flag. More information on complex chain making is included in our [advanced chain making tutorial](/tutorials/advanced/chain-making/).
 
 The last file is the `addresses.csv` file which is another artifact of the chain making process. It simply has the addresses and the "names" of the nodes. We find it useful when scripting out complex interactions and it is simply a reference file along the lines of `addr=$(cat $chain_dir/addresses.csv | grep $name | cut -d ',' -f 1)`.
 
@@ -260,8 +260,5 @@ Boom. You're all set with your custom built, permissioned, smart contract-ified,
 
 # Where to next?
 
-**Next, you'll want to [deploy some contracts](/tutorials/contractsdeploying/)!**
-
-Or, perhaps you'll want to go [make a more advanced permission chain](/tutorials/advanced/chainmaking/).
-
+**Next, you'll want to [deploy some contracts](/tutorials/contracts-deploying/)!**
 

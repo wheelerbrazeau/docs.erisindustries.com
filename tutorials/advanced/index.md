@@ -23,17 +23,19 @@ The tutorial follow the same sequence as the beginner tutorials only with more d
 
 ## Step 2 -- Roll your own Blockchain in seconds
 
-[Roll Your Own Chain](chainmaking/)
+[Roll Your Own Chain](chain-making/)
 
-[Deploy Your Own Chain to Cloud Nodes](chaindeploying/)
+[Deploy Your Own Chain to Cloud Nodes](chain-deploying/)
+
+[Update and Maintain Your Chain](chain-maintaining/)
 
 ## Step 3 -- Build (and run) your distributed application
 
-[Deploy Your Contracts](contractsdeploying/)
+[Deploy Your Contracts](contracts-deploying/)
 
 ## Step 4 -- Share Your Work
 
-[Make an Eris Service](servicesmaking/)
+[Make an Eris Service](services-making/)
 
 ## Solidity Tutorials
 

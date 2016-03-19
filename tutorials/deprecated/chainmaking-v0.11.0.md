@@ -11,7 +11,7 @@ This tutorial is structured to walk individuals through parts of the eris develo
 
 **Note** -- This tutorial is built for Eris versions `== 0.11.0`. For other versions of this tutorial please see below:
 
-* [>= v0.11.1](/tutorials/chainmaking/)
+* [>= v0.11.1](/tutorials/chain-making/)
 
 # Introduction
 
@@ -173,6 +173,8 @@ First, change the `chain_id` which should be the first field to `simple_chain`.
 ```json
 {
   "chain_id": "simple_chain",
+  ...
+}
 ```
 
 Second, we'll add in the addresses we generated and saved to addr1, addr2, and addr3 as accounts with some tokens on the chain in the accounts array of the genesis.json.
@@ -250,8 +252,6 @@ Boom. You're all set with your custom built, permissioned, smart contract-ified,
 
 # Where to next?
 
-**Next, you'll want to [deploy some contracts](/tutorials/contractsdeploying/)!**
-
-Or, perhaps you'll want to go [make a more advanced permission chain](/tutorials/advanced/chainmaking/).
+**Next, you'll want to [deploy some contracts](/tutorials/contracts-deploying/)!**
 
 

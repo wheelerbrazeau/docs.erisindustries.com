@@ -7,13 +7,13 @@ title: "Tutorials | Making and Using eris-services"
 
 # Dependencies
 
-This tutorial is a continuation of our [contracts interacting tutorial](/tutorials/contractsinteracting). If you have not completed that tutorial, please do so before working with this tutorial. Once we have a chain made, some contracts deployed to our chain, and a script to interact with them, we may want to be able to share that script with our colleagues *or* we may want to turn that script into a longer running microservice which is necessary for the applications we're building.
+This tutorial is a continuation of our [contracts interacting tutorial](/tutorials/contracts-interacting). If you have not completed that tutorial, please do so before working with this tutorial. Once we have a chain made, some contracts deployed to our chain, and a script to interact with them, we may want to be able to share that script with our colleagues *or* we may want to turn that script into a longer running microservice which is necessary for the applications we're building.
 
 To do this we will need to do two things: (1) docker-ize our scripts or daemons; and (2) marmot-ize our docker image.
 
 Along the way we are going to learn more about how docker works and how `eris` leverages docker under the hood to simplify your blockchain application making and operating.
 
-Before we begin, please rerun the app.js from the [previous tutorial](/tutorials/contractsinteracting) and set idi's number to `>=150`.
+Before we begin, please rerun the app.js from the [previous tutorial](/tutorials/contracts-interacting) and set idi's number to `>=150`.
 
 **N.B.**
 

@@ -177,4 +177,4 @@ All the files you need to share for another colleague to have access to the box 
 
 # Where to next?
 
-**Next you'll want to make a [more complex chain](/tutorials/advanced/chainmaking/).**
+**Next you'll want to make a [more complex chain](/tutorials/advanced/chain-making/).**

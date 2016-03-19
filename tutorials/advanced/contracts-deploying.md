@@ -16,8 +16,8 @@ This sequence of tutorials assumes that you have an understanding of the `eris` 
 This tutorial assumes you have worked through the following advanced tutorials:
 
 * [Get Started in the Cloud](/tutorials/advanced/cloud-getting-started/)
-* [Advanced Chain Making](/tutorials/advanced/chainmaking)
-* [Chain Deploying to the Cloud](/tutorials/advanced/chaindeploying)
+* [Advanced Chain Making](/tutorials/advanced/chain-making)
+* [Chain Deploying to the Cloud](/tutorials/advanced/chain-deploying)
 
 ## Contracts Strategy
 
@@ -78,7 +78,7 @@ contract GSFactory {
 }
 ```
 
-This is a slightly more advanced set of contracts than that we used in the [101 tutorial sequence](/tutorials/contractsdeploying/). Also, now we have multiple contracts we are going to handle.
+This is a slightly more advanced set of contracts than that we used in the [101 tutorial sequence](/tutorials/contracts-deploying/). Also, now we have multiple contracts we are going to handle.
 
 What do these contracts do? Well, they aren't terribly interesting we know. The first contract, the `GSContract`, merely `gets` and `sets` a value which is an unsigned integer type. The second contract, the `GSFactory`, merely makes a new `GSContract` when `create` is called or it returns the address of the most recent contract created when `getLast` is called.
 
@@ -240,4 +240,4 @@ eris chains stop -rxf $chain_name
 
 # Where to next?
 
-**Next you'll want to move on to [advanced services making](/tutorials/advanced/servicesmaking/).**
+**Next you'll want to move on to [advanced services making](/tutorials/advanced/services-making/).**

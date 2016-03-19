@@ -5,7 +5,7 @@ title: "Tutorials | Deploying your Permissioned Chain"
 
 ---
 
-Deploying and connecting your permissioned chains is not as difficult as [making a permissioned chain](/tutorials/advanced/chainmaking), but it does require some careful work. This tutorial will cover the basics of deploying and connecting your blockchain nodes.
+Deploying and connecting your permissioned chains is not as difficult as [making a permissioned chain](/tutorials/advanced/chain-making), but it does require some careful work. This tutorial will cover the basics of deploying and connecting your blockchain nodes.
 
 This tutorial is a continuation of the previous tutorial on making a permissed chain, so if you have not gone through that tutorial, then please do so before working through this tutorial.
 
@@ -32,7 +32,7 @@ This sequence of tutorials also assumes that you have worked through a few of th
 This tutorial assumes you have worked through the following advanced tutorials:
 
 * [Get Started in the Cloud](/tutorials/advanced/cloud-getting-started/)
-* [Advanced Chain Making](/tutorials/advanced/chainmaking)
+* [Advanced Chain Making](/tutorials/advanced/chain-making)
 
 ## Overview of Tutorial
 
@@ -176,4 +176,4 @@ done
 
 # Where to next?
 
-**Let us [do some more advanced contracts work](/tutorials/advanced/contractsdeploying).**
+**Let us [do some more advanced contracts work](/tutorials/advanced/contracts-deploying).**
