@@ -12,3 +12,5 @@ title: "Explainers"
 [What are smart contracts?](smart_contracts/)
 
 [When are smart contract approaches better than tokenized approaches?](contracts_v_tokens/)
+
+[What is Eris?](the-eris-stack/)

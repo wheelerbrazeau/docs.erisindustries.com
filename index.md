@@ -20,6 +20,7 @@ and simple to wrangle the dragons of smart contract blockchains.
 
 # What is Eris?
 
+- [Introduction to the Eris Stack](explainers/the-eris-stack/)
 - [The Eris platform and its components]({{ site.data.sites["main"].url }}/components/)
 - [eris:cli Access to the Eris Platform]({{ site.data.sites["main"].url }}/components/eriscli/)
 - [eris:db Permissionable, Logic Optimized Blockchain Client]({{ site.data.sites["main"].url }}/components/erisdb/)
