@@ -137,7 +137,15 @@ With all that said, we're ready to make a chain. First let us make a "fake" chai
 eris chains make -h
 ```
 
-That will give you an overview of the chains maker tool. Now we are ready.
+That will give you an overview of the chains maker tool.
+
+Now, let's make sure our keys service is on:
+
+```bash
+eris services start keys
+```
+
+Now we are ready.
 
 ```bash
 eris chains make toRemoveLater
@@ -189,6 +197,20 @@ chain_dir_this=$chain_dir/simplechain_full_000
 
 That will just create a few variables we'll be using in the future.
 
+Now let's check that our keys service is running.
+
+```bash
+eris services ls
+```
+
+If your keys service is running then you're a-OK. If it is not running then start it again now.
+
+```bash
+eris services start keys
+```
+
+Now, we're ready.
+
 ```bash
 eris chains make --account-types=Root:2,Full:1 simplechain
 ```
@@ -197,29 +219,19 @@ eris chains make --account-types=Root:2,Full:1 simplechain
 
 If you get an error which looks like this:
 
-```irc
-API error (404): lstat /var/lib/docker/aufs/mnt/e1e4f7063ced2456109aacf85f62f73685631a59d2c3d86907edf52e86a6f45d/home/eris/.eris/chains/account-types: no such file or directory
-```
-
-That means that you have an old eris/data image. Fix it with:
-
-```bash
-docker pull quay.io/eris/data
-```
-
-<hr />
-
 If you get a 500 error which looks like this:
 
 ```irc
-API error (500): Cannot start container eris_interactive_eris_service_htest_1: Cannot link to a non running container: /eris_service_keys_1 AS /eris_interactive_eris_service_htest_1/keys`
+API error (500): Could not get container for eris_service_keys_1
 ```
 
-That means that you have an old eris/keys image. Fix it with:
+That means that you have not started your keys service. Please run
 
 ```bash
-docker pull quay.io/eris/keys
+eris services start keys
 ```
+
+And then rerun the `chains make` command.
 
 **End Troubleshooting**
 
