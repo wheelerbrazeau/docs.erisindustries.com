@@ -19,6 +19,8 @@ Then see our [quick start guide](getting-started/) to get you more like this mar
 
 [Get the tools installed](getting-started/)
 
+[Build tools from source](install-souce/)
+
 [Troubleshoot your install](install-troubleshooting/)
 
 ## Step 2 -- Roll your own Blockchain in seconds
