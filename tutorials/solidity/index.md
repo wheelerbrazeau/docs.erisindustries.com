@@ -15,16 +15,16 @@ Then see our [quick start guide](../getting-started/) to get you more like this 
 
 {% image triumphant_marmot.jpg %}
 
-[Part I: The five type model](solidity-1)
+[Part I: The Five Types Model](solidity-1)
 
-[Part II: An action-driven architecture](solidity-2)
+[Part II: An Action-Driven Architecture](solidity-2)
 
-[Part III: Solidity language features](solidity-3)
+[Part III: Solidity Language Features](solidity-3)
 
-[Part IV: Solid Solidity](solidity-4)
+[Part IV: Testing Solidity](solidity-4)
 
-[Part V: Modular design and strategies](solidity-5)
+[Part V: Modular Solidity](solidity-5)
 
-[Part VI: Imports and packages](solidity-6)
+[Part VI: Advanced Soilidity Features](solidity-6)
 
-[Bonus: Updating Systems Built in Solidity](updating-solidity-1)
+[Part VII: Updating Solidity Contracts](updating-solidity-7)

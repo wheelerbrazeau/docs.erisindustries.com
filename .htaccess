@@ -27,3 +27,4 @@ RewriteRule tutorials/chainmaking/ https://%{SERVER_NAME}/tutorials/chain-making
 RewriteRule tutorials/contractsdeploying/ https://%{SERVER_NAME}/tutorials/contracts-deploying [R,L]
 RewriteRule tutorials/contractsinteracting/ https://%{SERVER_NAME}/tutorials/contracts-interacting [R,L]
 RewriteRule tutorials/servicesmaking/ https://%{SERVER_NAME}/tutorials/services-making [R,L]
+RewriteRule tutorials/solidity/updating-solidity-1 https://%{SERVER_NAME}/tutorials/solidity/solidity-7 [R,L]

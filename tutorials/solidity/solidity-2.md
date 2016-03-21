@@ -1,15 +1,11 @@
 ---
 
 layout: docs
-title: "Tutorials | Solidity 2"
+title: "Tutorials | Solidity 2: An Action-Driven Architecture"
 
 ---
 
-## Part II: An action-driven architecture
-
-**Note**: Solidity is still under heavy development, which means running the actual code is hard, and since it's on dev it cannot be assumed to be stable.
-
-### Introduction
+# Introduction
 
 The system proposed in part 1 is a good system in theory. It has good separation of concerns, is very modular, and is set up to handle permissions. This is how a typical system would look:
 
@@ -23,10 +19,6 @@ There is a big problem with these type of systems however. Let's say we have a s
 
 We could try and mitigate this by dividing the ALC up into multiple contracts. We could also omit the ALC entirely and instead add multiple controllers that we call directly. Both of these solutions are perfectly fine, but we will no longer have a single entry-point. Moreover, we still have to replace entire contracts in order to do minor changes to the logic.
 
-The system I'm going to propose here allows you to keep one entry point, and allows you to switch out individual functions without touching any other code, it removes the need for controllers entirely, it is scalable, secure, and has got a massive proof-of-concept system behind it - [**The People's Republic of Doug**](https://github.com/androlo/EthereumContracts), or **PRODOUG**. PRODOUG is a smart contract-powered application which works somewhat like a government, having banking, citizenship/titles, a land registry, voting, a forum, and some other things. All in all, it has about 70 unique contracts that are made up of about 20k lines of LLL contract code. It ran on the early Ethereum test-chains.
-
-### TL;DR
-
 Action driven architecture:
 
 - Good, flexible permissions management. One unit of functionality - one action - one permission.  contract is not a good divider, because removing the contract and performing one of its basic functions (like depositing into an account) would normally require very different permission levels. Actions are better.
@@ -37,19 +29,27 @@ Action driven architecture:
 
 - Expensive, as there is lot of code and contracts, so usually not good in production environments.
 
-###Actions
+## Dependencies
+
+This sequence of tutorials assumes that you have an understanding of the `eris` tooling to the point we ended in our [101 tutorial sequence](/tutorials/getting-started/).
+
+This tutorial assumes you have worked through the following Solidity tutorials:
+
+* [The Five Types Model (Solidity 1)](/tutorials/solidity/solidity-1/)
+
+# Actions
 
 PRODOUG was made secure by encapsulating all the code that users could run in something called actions. All incoming transactions had to be on a specific format, and had to be sent through the 'action manager' contract (with a few exceptions). Here's an example of a super simple action interface:
 
-{% highlight javascript %}
+```javascript
 contract SomeAction {
   function execute(type1 par1, type2 par2, ....) constant returns (bool result) {}
 }
-{% endhighlight %}
+```
 
 The way you manage and call action contracts is by keeping references to them in a manager contract:
 
-{% highlight javascript %}
+```javascript
 // The action manager
 contract ActionManager {
 
@@ -82,11 +82,11 @@ contract ActionManager {
   }
 
 }
-{% endhighlight %}
+```
 
 **Important**
 
-Since we must allow generic arguments, we must pass something into the action that can stand for any number of arguments of any type - like an `Object` in java, an `interface{}` in Go, or a `*void` in C. This is not fully supported in Solidity, but the first thing that that will be useful in this case is probably going to be byte arrays - which is basically how this worked in LLL. Byte arrays are fully generic, so what we'd do here (for now) is to use a javascript library (such as `web3`) which makes it very simple to convert arguments into properly formatted call-data. There are other solutions out there as well, such as this [Modular-Functions](https://github.com/ConsenSys/Ethereum-Development-Best-Practices/wiki/Modular-Functions.-(WIP)).
+Since we must allow generic arguments, we must pass something into the action that can stand for any number of arguments of any type - like an `Object` in java, an `interface{}` in Go, or a `*void` in C. This is not fully supported in Solidity, but the first thing that that will be useful in this case is probably going to be byte arrays - which is basically how this worked in LLL. Byte arrays are fully generic, so what we'd do here (for now) is to use a javascript library (such as `eris-contracts`) which makes it very simple to convert arguments into properly formatted call-data.
 
 **Controller and database**
 
@@ -100,7 +100,7 @@ This is a diagram over how the calls would look in a simple fund manager where y
 
 There is of course no real security yet. At this point we just have a simple action system. People can add actions to it, remove them, and execute them. Before we can add any actions to it we have to add another component - the Doug. Even though the action manager is technically part CMC (contract managing contract), we need a Doug as well. It will link the actions and action manager with the other contracts in the system, such as databases. We'll start with a namereg type Doug similar to the one in part 1.
 
-{% highlight javascript %}
+```javascript
 // The Doug contract.
 contract Doug {
 
@@ -150,11 +150,11 @@ contract Doug {
     }
 
 }
-{% endhighlight %}
+```
 
 We will also add a super simple bank, or credit contract.
 
-{% highlight javascript %}
+```javascript
 // The Bank contract
 contract Bank {
 
@@ -177,7 +177,7 @@ contract Bank {
   }
 
 }
-{% endhighlight %}
+```
 
 This is how the system would be initialized:
 
@@ -187,7 +187,7 @@ This is how the system would be initialized:
 
 What we need do next is to add an action for endowing an address with coins, and one for charging it. We need to add one more function to the actions interface though - the setDougAddress function. This function is what will give actions (indirect) access to all the contracts in the system so they can carry out their work. It is also an important security measure. We will use the DougEnabled contract from part 1.
 
-{% highlight javascript %}
+```javascript
 contract DougEnabled {
     address DOUG;
 
@@ -209,19 +209,19 @@ contract DougEnabled {
     }
 
 }
-{% endhighlight %}
+```
 
 The basic action template starts like this:
 
-{% highlight javascript %}
+```javascript
 contract Action is DougEnabled {}
-{% endhighlight %}
+```
 
 Note that we don't include an 'execute' function for the reasons mentioned above. We will add the execute function on a per-action basis.
 
 To lock these contracts down, we only allow the contract currently registered as `actions` to call the functions. Much like the `FundManagerEnabled` contract in part 1.
 
-{% highlight javascript %}
+```javascript
 contract ContractProvider {
   function contracts(bytes32 name) returns (address){}
 }
@@ -238,17 +238,17 @@ contract ActionManagerEnabled is DougEnabled {
     return false;
   }
 }
-{% endhighlight %}
+```
 
 The new action base class is this:
 
-{% highlight javascript %}
+```javascript
 contract Action is ActionManagerEnabled {}
-{% endhighlight %}
+```
 
 Here's the endow action contract.
 
-{% highlight javascript %}
+```javascript
 // The Bank contract (the "sub interface" we need).
 contract Endower {
   function endow(address addr, uint amount) {}
@@ -270,11 +270,11 @@ contract ActionEndow is Action {
     return true;
   }
 }
-{% endhighlight %}
+```
 
 This is the action for charging.
 
-{% highlight javascript %}
+```javascript
 // The Bank contract (or the "sub interface" we need).
 contract Charger {
   function charge(address addr, uint amount) returns (bool) {}
@@ -297,11 +297,11 @@ contract ActionCharge {
   }
 
 }
-{% endhighlight %}
+```
 
 When we add these actions to the action manager it will be possible for users to execute them and work with the bank contract that way. Note that it is still possible to interact with the bank contract directly so the actions are not useful yet, but we will fix that.
 
-###Permissions
+# Permissions
 
 Step 2 is to control Doug contract access from the outside. It should only be possible to interact with the contracts through actions, and it should only be possible to run actions through the actions manager. The first thing we need to do is make sure the action manager (and later the action database) calls the 'setDougAddress' function that we added to the actions. It should call it and pass the DOUG address to the action as soon as it's registered. If the function returns false, that means it already has a doug address set which in turn means the action should not be registered with the action manager at all. It is unsafe.
 
@@ -309,11 +309,11 @@ We also need to add the DOUG address to the action manager. In fact, the bank an
 
 The action manager will also get a 'validate' function that can be called by other contracts to ensure that only actions can call them, and we will also break out the actions list into a separate actions database contract so that we can modify the action manager without having to clear all the actions.
 
-**The updated contracts**
+## The Updated Contracts
 
 This is the new action manager. We're adding the setDougAddress functionality when adding actions and also an 'active contract' field that will be used for validation. We will make `ActionDb`callable only from the action manager now, but there will be an even better system later.
 
-{% highlight javascript %}
+```javascript
 contract ActionDb is ActionManagerEnabled {
 
   // This is where we keep all the actions.
@@ -339,9 +339,9 @@ contract ActionDb is ActionManagerEnabled {
   }
 
 }
-{% endhighlight %}
+```
 
-{% highlight javascript %}
+```javascript
 // The new action manager.
 contract ActionManager is DougEnabled {
 
@@ -396,11 +396,11 @@ contract ActionManager is DougEnabled {
   }
 
 }
-{% endhighlight %}
+```
 
 Here is the new bank:
 
-{% highlight javascript %}
+```javascript
 // Interaction with the action manager.
 contract Validator {
   function validate(address addr) constant returns (bool) {}
@@ -449,13 +449,13 @@ contract Bank is DougEnabled {
   }
 
 }
-{% endhighlight %}
+```
 
 What we have now is a system that allows us to add contracts (any contracts) to DOUG, and actions. The contracts can not be called except through actions, which means that we can control who gets to call the contracts by controlling who gets to execute actions, and since all actions are run in the same way it will be easy.
 
 There is other benefits to a system like this as well, for example PRODOUG used the fact that all transactions went through the action manager to log them. The log included data such as the caller address, which action was called, the number of the block in which the tx was added, etc. This is good if you want to keep track of what's going on.
 
-###Locking things down
+# Locking Things Down
 
 The last thing we have to fix is access to DOUG and the action manager. It is true that the bank and other contracts must be called via actions, but anyone is allowed to add and remove actions, and also to add and remove contracts from DOUG. We're going to start by adding a simple permissions contract that we can use to set permissions for accounts. It'll be registered with DOUG under the name "perms". We're then going to add functions to actions where permissions can be gotten and set. Finally we will complement the system with the following basic actions:
 
@@ -470,7 +470,7 @@ Note that there will be an add action action. It will be added to the action dat
 
 *Pro tip: Don't remove the add action action.*
 
-{% highlight javascript %}
+```javascript
 // Interaction with the action manager.
 contract Validator {
   function validate(address addr) constant returns (bool) {}
@@ -497,18 +497,18 @@ contract Permissions is DougEnabled {
   }
 
 }
-{% endhighlight %}
+```
 
 Next we will modify the actions template so that it is possible to get and set the permissions required to execute them. We will add the following functions to the interface:
 
-{% highlight javascript %}
+```javascript
 function permission(address addr) constant returns (uint) {}
 function setPermission(uint8 permVal) returns (bool) {}
-{% endhighlight %}
+```
 
 This is how we'd update the action managers execute function.
 
-{% highlight javascript %}
+```javascript
 // For getting permissions.
 contract Permissioner {
   function perms(address addr) constant returns (uint8) { }
@@ -539,9 +539,9 @@ function execute(bytes32 actionName, bytes data) returns (bool) {
   ...
 
 }
-{% endhighlight %}
+```
 
-### The doubly linked list
+# The Doubly Linked List
 
 Before moving on to assembling the final contracts, we need to address something important that we haven't touched upon yet. If we look at Doug, or the action database, or any database contract for that matter, what bad thing do they all have in common? Well, the fact that we have no way of getting a collection of all the entries in the mappings. We have to get entries (such as contracts in the case of Doug) by key. The `mapping` type that backs all these databases has no built in iterator or function to get all elements. One way of adding these features to a mapping it by wrapping it inside a linked list data-structure.
 
@@ -551,24 +551,24 @@ The doubly linked list over a `mapping` provides many benefits. We can add and r
 
 So, what do we need to add?
 
-**Step 1**
+## Step 1
 
 First we need to add three additional fields to the contract - the size of the list, and references to the current head and tail. Let us start with a "generic" linked list contract that uses addresses as keys, and a fixed-length string as the value.
 
-{% highlight javascript %}
+```javascript
 contract DoublyLinkedList {
   uint size;
   address tail;
   address head;
   mapping(address => bytes32) elements;
 }
-{% endhighlight %}
+```
 
-**Step 2**
+## Step 2
 
 To keep references to the previous and next element, we need to switch out the bytes32 value with a struct, like this:
 
-{% highlight javascript %}
+```javascript
 contract DoublyLinkedList {
 
   struct Element {
@@ -583,9 +583,9 @@ contract DoublyLinkedList {
   address head;
   mapping(address => Element) elements;
 }
-{% endhighlight %}
+```
 
-**Step 3**
+## Step 3
 
 Now we need to implement the logic for adding and removing elements. Let's start with add. We're going to add elements as the new `head`, and the adding logic for an element is easy: Either the list is **empty**, which means the new element becomes both tail and head, or it is **non empty** and it becomes the new head.
 
@@ -595,7 +595,7 @@ Add the new element as the **next** element of of the current head, and add the 
 
 Assuming we don't allow elements to be over-written, and we use the mapping as a regular mapping, this is what the contract could look like with an add element function:
 
-{% highlight javascript %}
+```javascript
 contract DoublyLinkedList {
 
   struct Element {
@@ -637,7 +637,7 @@ contract DoublyLinkedList {
        return true;
   }
 }
-{% endhighlight %}
+```
 
 All in all, this is not too much code to add, and it's fairly straight forward. When it comes to removal, it's a bit more complicated. We need to consider three basic cases.
 
@@ -649,7 +649,7 @@ Case 3 is that the element is the tail, in which case it's similar.
 
 Finally, case 4 is if this element is neither head nor tail. In this case the head and tail fields will not be touched, but we need to link "around" this element by changing the **previous** of this ones **next**, and the **next** of this ones **previous**. Here is the final contract with an add and remove function. We also add a special accessor that only gets the `data`, and not the entire element.
 
-{% highlight javascript %}
+```javascript
 contract DoublyLinkedList {
 
   struct Element {
@@ -739,13 +739,13 @@ contract DoublyLinkedList {
     }
 
 }
-{% endhighlight %}
+```
 
 That is all we need for a basic implementation.
 
 To read this list from javascript, a simple loop could look like this:
 
-{% highlight javascript %}
+```javascript
 function getAllElements(){
   var list = [];
   var tail = listContract.tail();
@@ -764,11 +764,11 @@ function getAllElements(){
   }
   return list;
 }
-{% endhighlight %}
+```
 
 Note that accessing the element data by index is a bit ugly. Personally I use the json ABI to generate objects of the returned data with the proper names etc., using something like this (which will also be in Eris js):
 
-{% highlight javascript %}
+```javascript
 // fName = function name.
 function JsonAdapterOut(abi, fName){
   var outputs;
@@ -793,13 +793,13 @@ function JsonAdapterOut(abi, fName){
     return ret;
   }
 };
-{% endhighlight %}
+```
 
 A note on generic types: Linked lists can not be fully generic right now. It would be doable in theory, if the key and data field in the Element struct were both `bytes` objects, but keys must be elementary types right now. Also, it would be hard to work with and document lists of that kind. Using bytes might be the way of doing it though, until/unless generics is added to Solidity, which is probably far into the future. What this means is a linked list generally has to be tailored for the contract that extends it.
 
 Finally, since linked lists adds to the complexity of a big set of new contracts they will not be added to the finished contracts; instead there is a regular linked-list Doug contract included in the finished contracts section that can be used as a model. In part 3 it will use only linked lists.
 
-### Wrapping up
+## Wrapping up
 
 Before assembling a list of the final contracts, we need to do some final modifications.
 
@@ -807,15 +807,15 @@ Doug will have to be modified. We need it to validate the account when someone i
 
 Keep in mind, this is just a basic action driven architecture. PRODOUG for example had voting. This ment actions could sometimes  not be carried out directly, instead the action would spawn a copy of itself and be kept in a temporary list until the vote was done. Those types of actions had an init function where all the parameters was set, and then an execute function that was carrried out when a vote was concluded. The way it worked with permissions was that actions did not return a number when asked for the required permission but a name of a poll type. These poll types was kept in a list in a different manager that handled polls. Sometimes the polls were automatic (based on some user property) and sometimes there was a full-on vote with time limits, a quorums and other things. In hindsight, I think it would have been better to allow those type of actions to just store the indata in an indexed list of some sort, to keep track of which data belonged to which caller, until the vote has been resolved. CREATE calls which are very expensive on gas-enabled chains so short lived objects (poltergeists) should generally be kept at a minimum.
 
-Finally, this system is still a bit tainted by the low level system it came out of. Feel like some objects and functionality could be made better? In that case, why not [connect with us at Eris](https://erisindustries.com/). We have a growing community, and just launched our [Educations and Outreach program](https://blog.erisindustries.com/products/2015/03/08/op-cuddlemarmot/). There are of course lots of things that can be done to extend this base system. I will probably write a fresh consensus sub-system later when we get more time to treat and discuss these type of things. Another thing that would not be hard is to allow actions to run other actions. That could be done for example by replacing the active action field with a stack of some description.
+Finally, this system is still a bit tainted by the low level system it came out of.
 
-###The finished contracts
+## The finished contracts
 
 Gonna throw in a few actions for locking and unlocking of the actionmanager as well as some extra logging stuff. It's good to be able to do that.
 
 **Pure interfaces**
 
-{% highlight javascript %}
+```javascript
 contract ContractProvider {
     function contracts(bytes32 name) returns (address){}
 }
@@ -835,11 +835,11 @@ contract Charger {
 contract Endower {
   function endow(address addr, uint amount) returns (bool) {}
 }
-{% endhighlight %}
+```
 
-**Base Contracts**
+# Base Contracts
 
-{% highlight javascript %}
+```javascript
 contract DougEnabled {
     address DOUG;
 
@@ -888,10 +888,11 @@ contract Validee {
         return false;
     }
 }
-{% endhighlight %}
+```
 
-ActionDb
-{% highlight javascript %}
+## ActionDB
+
+```javascript
 contract ActionDb is ActionManagerEnabled {
 
     // This is where we keep all the actions.
@@ -939,10 +940,11 @@ contract ActionDb is ActionManagerEnabled {
     }
 
 }
-{% endhighlight %}
+```
 
-ActionManager
-{% highlight javascript %}
+## ActionManager
+
+```javascript
 contract ActionManager is DougEnabled {
 
   struct ActionLogEntry {
@@ -1066,10 +1068,11 @@ contract ActionManager is DougEnabled {
   }
 
 }
-{% endhighlight %}
+```
 
-Doug
-{% highlight javascript %}
+## Doug
+
+```javascript
 contract Doug {
 
     address owner;
@@ -1130,10 +1133,11 @@ contract Doug {
     }
 
 }
-{% endhighlight %}
+```
 
-Bank
-{% highlight javascript %}
+## Bank
+
+```javascript
 contract Bank is Validee {
 
   mapping(address => uint) balance;
@@ -1160,10 +1164,11 @@ contract Bank is Validee {
   }
 
 }
-{% endhighlight %}
+```
 
-Permissions
-{% highlight javascript %}
+## Permissions
+
+```javascript
 // The Permissions contract
 contract Permissions is Validee {
 
@@ -1178,12 +1183,11 @@ contract Permissions is Validee {
     }
 
 }
-{% endhighlight %}
+```
 
-Actions
+## Actions
 
-
-{% highlight javascript %}
+```javascript
 contract Action is ActionManagerEnabled, Validee {
   // Note auto accessor.
   uint8 public permission;
@@ -1364,10 +1368,11 @@ contract ActionSetActionPermission is Action {
     }
 
 }
-{% endhighlight %}
+```
 
 Linked list Doug
-{% highlight javascript %}
+
+```javascript
 contract DougEnabled {
     function setDougAddress(address dougAddr) returns (bool result){}
     function remove(){}
@@ -1537,18 +1542,10 @@ contract Doug is DougDb {
     }
 
 }
-{% endhighlight %}
+```
 
-### Coming up
+# Where to next?
 
-In the next part we will learn how to integrate smart contract systems into applications by RPCing them through a javascript API. This involves an in-depth look at a number of important solidity features, mainly `events`. Events are essential in finding out the result of transactions, as they can be used to print messages into the client log which can be captured and read using a combination of `filters` and `watches` (there are a few events in the linked list Doug contract btw.). It is a lot less complicated then it sounds, much thanks to the innovative `web3` javascript library.
+In the next part we will learn how to integrate smart contract systems into applications by RPCing them through a javascript API. This involves an in-depth look at a number of important solidity features, mainly `events`. Events are essential in finding out the result of transactions, as they can be used to print messages into the client log which can be captured and read using a combination of `filters` and `watches` (there are a few events in the linked list Doug contract btw.). It is a lot less complicated then it sounds.
 
-There will also be some other things like basic blockchain inspection, which can be useful in order to avoid and recover from errors. Calling the blockchain client from javascript (or anywhere else) is essentially I/O, and some basic knowledge of the system is needed in order to work with it properly.
-
-Sometime later I will create a base action driven system for the Eris stack if someone wants to try. It would include an action manager, Doug, and a few basic services and actions just to get things started. That and some permissions systems and configurations, but I assume a set of standard options will do in most cases and those can be made available. It will also include a javascript deployment and auto test script to use with our node.js stuff (already been done), and likely also .pdx deployment scripts for EPM (the Eris package manager, our deployment and chain management cli tool). If it "catches on", there may also be a simple admin editor for working with it, where you can list the actions, add and remove actions via javascript etc. This all depends on how interested people are. I like it myself, beacuse building a DApp using this system would mean less focus on system design and more on the actual business logic, so I hope it may be successful. All you have to do is throw a few basic database-type contracts and actions in, and actions are very small due to all the logic they get automatically from their base classes.
-
-I am also going to add custom action contract objects to the `web3` fork/extension we're working with, basically singleton contracts that works like the regular one except the calls are made to the action manager and they are automatically set up for that. Also, since the json abi for a contract gives the type and name of each field, it will also be possible to functions on these contract for auto-generating html templates that can be used in the management UI. There could be a global option on what type of template to use eg plain html, angular.js etc. This is something my colleagues pushed for in the early "Project Douglas" days, and is even part of the `c3d` specification. Not working alone here...
-
-### Finally
-
-Credits to `Solidity` and `web3` devs who are adding well-functioning and innovative tools to the smart contract-writing toolbox.
+**Next, we'll go deeper into [Solidity's language features](/tutorials/solidity/solidity-3/)!**
