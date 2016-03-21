@@ -176,4 +176,4 @@ done
 
 # Where to next?
 
-**Let us [do some more advanced contracts work](/tutorials/advanced/contracts-deploying).**
+**Let us [learn how to do some maintenance on these chains](/tutorials/advanced/chain-maintaining).**

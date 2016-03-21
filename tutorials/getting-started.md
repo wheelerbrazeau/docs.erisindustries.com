@@ -69,6 +69,8 @@ brew install docker docker-machine
 
 ### Windows Only
 
+**N.B.** No matter whether you follow the below or not, you'll want to run eris commands either from `git bash` or from the `Docker Quickstart Terminal` (which is really just `git bash`) window. While most commands will work from the `cmd` terminal, it is much more complicated to get right. All the tutorials will assume that you are using the `Docker Quickstart Terminal` and are structured to support **only** that environment.
+
 If you're a chocolatey user then:
 
 ```bash
