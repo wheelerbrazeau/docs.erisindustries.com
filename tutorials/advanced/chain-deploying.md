@@ -122,7 +122,7 @@ In this file you'll edit the following line:
 command = "syslog://logs2.papertrailapp.com:XXXX"
 ```
 
-You can use any of the services logspout provides. Or if you use PaperTrail, then just update with your port. Now let's get those services turned on.
+You can use any of the services logspout provides. Or if you use PaperTrail, then just update with your subdomain and/or port. Now let's get those services turned on.
 
 ```bash
 for i in `seq 0 6`
