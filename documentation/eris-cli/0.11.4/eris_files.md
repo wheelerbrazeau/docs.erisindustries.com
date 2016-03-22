@@ -42,9 +42,9 @@ eris files
 * [eris files cache](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_cache/)	 - Cache files to IPFS.
 * [eris files cached](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_cached/)	 - List files cached locally.
 * [eris files cat](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_cat/)	 - Cat the contents of a file from IPFS.
-* [eris files get](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_get/)	 - Pull files from IPFS via a hash and save them locally.
+* [eris files get](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_get/)	 - Pull files/objects from IPFS via a hash and save them locally.
 * [eris files ls](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_ls/)	 - List links from an IPFS object.
-* [eris files put](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_put/)	 - Post files to IPFS.
+* [eris files put](https://docs.erisindustries.com/documentation/eris-cli/0.11.4/eris_files_put/)	 - Post files or whole directories to IPFS.
 
 ## See Also
 

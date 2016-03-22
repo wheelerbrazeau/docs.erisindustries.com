@@ -13,8 +13,11 @@ Import from a host folder to a named data container's directory
 
 Import from a host folder to a named data container's directory.
 Requires src and dest for each host and container, respectively.
-Container path enters at /home/eris/.eris
-Source (host) path must be absolute and destination dir must exist.
+Container path enters at /home/eris/.eris and destination directory
+will be created in container if it does not exist.
+
+Command will also create a new data container if data container
+(NAME) does not exist.
 
 ```bash
 eris data import NAME SRC DEST

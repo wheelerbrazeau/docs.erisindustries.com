@@ -7,23 +7,21 @@ title:      "Documentation | eris:cli | eris files put"
 
 # eris files put
 
-Post files to IPFS.
+Post files or whole directories to IPFS.
 
 ## Synopsis
 
-Post files to IPFS.
-
-Optionally post all contents of a directory with: put --dir=DIRNAME
+Post files or whole directories to IPFS.
+Directories will be added as objects in the MerkleDAG.
 
 ```bash
-eris files put FILE
+eris files put FILE/DIR
 ```
 
 ## Options
 
 ```
-      --dir eris files get   add all files from a directory (note: this will not create an ipfs object). returns a log file (ipfs_hashes.csv) to pass into eris files get
-      --gateway string       specify a hosted gateway. default is IPFS' gateway; type "eris" for our gateway, or use your own with "http://yourhost"
+      --gateway string   specify a hosted gateway. default is IPFS' gateway; type "eris" for our gateway, or use your own with "http://yourhost"
 ```
 
 ## Options inherited from parent commands

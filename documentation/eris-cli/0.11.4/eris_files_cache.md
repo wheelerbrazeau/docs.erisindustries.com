@@ -14,18 +14,11 @@ Cache files to IPFS.
 Cache files to IPFS' local daemon.
 
 It caches files locally via IPFS pin, by hash.
-Optionally pass in a CSV with: cache --csv=[FILE].
 
 NOTE: "put" will "cache" recursively by default.
 
 ```bash
 eris files cache HASH
-```
-
-## Options
-
-```
-      --csv string   specify a .csv with entries of format: hash,fileName
 ```
 
 ## Options inherited from parent commands

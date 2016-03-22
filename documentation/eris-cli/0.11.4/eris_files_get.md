@@ -7,23 +7,14 @@ title:      "Documentation | eris:cli | eris files get"
 
 # eris files get
 
-Pull files from IPFS via a hash and save them locally.
+Pull files/objects from IPFS via a hash and save them locally.
 
 ## Synopsis
 
-Pull files from IPFS via a hash and save them locally.
-
-Optionally pass in a CSV with: get --csv=FILE
+Pull files/objects from IPFS via a hash and save them locally.
 
 ```bash
-eris files get HASH [FILE]
-```
-
-## Options
-
-```
-      --csv string       specify a .csv with entries of format: hash,fileName
-      --dirname string   name of new directory to dump IPFS files from --csv
+eris files get HASH FILE/DIR
 ```
 
 ## Options inherited from parent commands

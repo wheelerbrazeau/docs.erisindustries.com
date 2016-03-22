@@ -13,8 +13,7 @@ Export a named data container's directory to a host directory
 
 Export a named data container's directory to a host directory.
 Requires src and dest for each container and host, respectively.
-Container path enters at /home/eris/.eris
-Destination (host) path can be relative.
+Container path enters at /home/eris/.eris.
 
 ```bash
 eris data export NAME SRC DEST
