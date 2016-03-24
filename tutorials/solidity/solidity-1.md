@@ -1069,4 +1069,4 @@ There is also the matter of trust, but I treat that in the beginning of the docu
 
 # Coming next
 
-**Next, let us look at [what we call action-driven architecture](/tutorials/soldity/solidity-2/).**
+**Next, let us look at [what we call action-driven architecture](/tutorials/solidity/solidity-2/).**
