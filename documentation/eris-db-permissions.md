@@ -7,7 +7,7 @@ title:       "Documentation | eris:db Permissions"
 
 eris:db is a blockchain client which runs on permissionable blockchain networks.
 
-In eris:db use a **capabilities base permissioning system** which means that certain key-pairs (which will be owned by users who have organizations and roles) are capable of performing certain functions within the blockchain network. In other words, different users have different capabilities.
+eris:db uses a **capabilities base permissioning system** which means that certain key-pairs (which will be owned by users who have organizations and roles) are capable of performing certain functions within the blockchain network. In other words, different users have different capabilities.
 
 To see more about how we typically design permission bundles for proofs of concept you can see [this deck](http://www.slideshare.net/CaseyKuhlman/eris-industries-typical-account-types).
 
