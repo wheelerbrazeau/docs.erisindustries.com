@@ -122,7 +122,9 @@ In this file you'll edit the following line:
 command = "syslog://logs2.papertrailapp.com:XXXX"
 ```
 
-You can use any of the services logspout provides. Or if you use PaperTrail, then just update with your subdomain and/or port. Now let's get those services turned on.
+You can use any of the services logspout provides. Or if you use PaperTrail, then just update with your subdomain and/or port. You will need to edit the `logspout.toml` file in each node that you are running either via adding a `--machine` flag on the edit logspout service command above or by `scp`'ing a locally created file into each node's `~/.eris/services/` folder.
+
+Now let's get those services turned on.
 
 ```bash
 for i in `seq 0 6`
