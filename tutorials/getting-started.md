@@ -143,6 +143,7 @@ If you have any errors which arise during the installation process, please see o
 If you want to create your blockchain it is very easy.
 
 ```bash
+eris services start keys
 eris chains make test_chain --chain-type simplechain
 eris chains new test_chain
 ```
