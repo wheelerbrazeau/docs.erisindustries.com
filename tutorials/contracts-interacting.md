@@ -79,7 +79,7 @@ var erisC = require('eris-contracts');
 
 // NOTE. On Windows/OSX do not use localhost. find the
 // url of your chain with:
-// docer-machine ls
+// docker-machine ls
 // and find the docker machine name you are using (usually default or eris).
 var erisdbURL = "http://localhost:1337/rpc";
 
